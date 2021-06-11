@@ -24,7 +24,7 @@
 				dark:bg-gray-800
 				dark:border-gray-600
 			">
-				<div class="font-semibold text-gray-800 dark:text-white">
+				<div class="font-semibold dark:text-white">
 					<span class="text-2xl">
 						MagePass
 					</span>
@@ -36,7 +36,7 @@
 					</div>
 				</div>
 				<hr class="my-4 dark:border-gray-600" />
-				<div class="text-xl mb-4 font-semibold text-gray-800 dark:text-white">
+				<div class="text-xl mb-4 font-semibold dark:text-white">
 					Passwords
 				</div>
 				<div class="
@@ -98,7 +98,7 @@
 				</div>
 
 				<hr class="my-4 dark:border-gray-600" />
-				<div class="text-xl mb-4 font-semibold text-gray-800 dark:text-white">
+				<div class="text-xl mb-4 font-semibold dark:text-white">
 					Folders
 				</div>
 				<div class="
@@ -184,13 +184,13 @@
 				</a>
 			</div>
 			<div class="flex w-full flex-col h-screen p-4">
-				<div id="create-account">
-					<div class="mb-4 text-2xl font-semibold text-gray-800 dark:text-white">
+				<div id="create-account" class="hidden">
+					<div class="mb-4 text-2xl font-semibold dark:text-white">
 						Create a New Account
 					</div>
 				</div>
 				<div id="login-account" style="background: black">
-					<div class="mb-4 text-2xl font-semibold text-gray-800 dark:text-white">
+					<div class="mb-4 text-2xl font-semibold dark:text-white">
 						Login to Your Account
 					</div>
 					<div class="flex">
@@ -241,9 +241,50 @@
 							" placeholder="Password" />
 						</div>
 					</div>
+					<hr class="mt-8 mb-4 dark:border-gray-600" />
+					<div class="my-4 text-2xl font-semibold dark:text-white">
+						Getting Started
+					</div>
+					<p class="mb-4">
+						First time using MagePass? MagePass can manage your passwords <i>locally</i> or <i>remotely</i>. For
+						more information and an in-depth guide, visit
+						<a href="https://www.pxoink.net" target="_blank">the official documentation</a>.
+					</p>
+					<div class="my-4 text-xl font-semibold dark:text-white">
+						Local Storage
+					</div>
+					<p class="mb-4">
+						If you want to store your passwords locally using the default configuration, simply click
+						<i>Create New Account</i> in the menu.
+					</p>
+					<p class="mb-4">
+						Please note that if you store your passwords locally, you won't be able to access them cross-platform
+						unless you setup a remote solution.
+					</p>
+					<div class="my-4 text-xl font-semibold dark:text-white">
+						Remote Storage
+					</div>
+					<p class="mb-4">
+						Remote storage can be accomplished one of two ways, with the official remote storage service MageTomb,
+						or you can sync your local store with a third-party application.
+					</p>
+					<p class="mb-4">
+						If you've setup MageTomb, or you've purchased a service that provides MageTomb, you can configure your
+						application settings to use MageTomb instead of local storage. Click <i>Settings</i> and configure
+						your endpoint before creating or logging into your account.
+					</p>
+					<p class="mb-4">
+						Do you have your own solution for remote storage, such as automatic syncing software? You can store
+						your passwords locally but select a destination to sync with. Click <i>Settings</i> in the menu to
+						configure your storage location. Please note that spinning up your own solution is not recommended.
+					</p>
+					<p class="mb-4">
+						Looking for remote storage services? Contact
+						<a href="https://www.pxoink.net" target="_blank">PxO Ink LLC</a> to setup your r
+					</p>
 				</div>
-				<div id="create-password">
-					<div class="mb-4 text-2xl font-semibold text-gray-800 dark:text-white">
+				<div id="create-password" class="hidden">
+					<div class="mb-4 text-2xl font-semibold dark:text-white">
 						Create a New Password
 					</div>
 				</div>
