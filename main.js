@@ -1,4 +1,7 @@
-const { app, BrowserWindow, screen } = require('electron');
+const { app, BrowserWindow, screen, ipcMain } = require('electron');
+const path = require('path');
+
+const config = require(path.join(__dirname, 'config.json'));
 
 try {
 	require('electron-reloader')(module)
@@ -11,14 +14,14 @@ function createWindow() {
 		width: width,
 		height: height,
 		webPreferences: {
+			contextIsolation: false,
+			enableRemoteModule: true,
 			nodeIntegration: true
         }
 	});
 
 	win.loadFile('index.html');
 	win.webContents.openDevTools();
-
-	document.getElementById('dev').innerText=app.getPath('userData');
 }
 
 app.whenReady().then(() => {
@@ -30,6 +33,10 @@ app.whenReady().then(() => {
 
 	app.on('activate', function () {
 		if (BrowserWindow.getAllWindows().length === 0) createWindow();
+	});
+
+	ipcMain.on('requestForInitialize', (event) => {
+
 	});
 })
 
