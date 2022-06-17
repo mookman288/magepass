@@ -14,6 +14,11 @@ const html = function(file, type = 'div') {
 	return element;
 }
 
+function loadPage(anchor, element) {
+	let $anchor = document.querySelector(anchor);
+	let $element = document.querySelector(element);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 	let head = document.querySelector('head');
 

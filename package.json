@@ -26,5 +26,10 @@
     "cross-env": "^7.0.3",
     "electron": "^13.1.2",
     "electron-reloader": "^1.2.1"
+  },
+  "build": {
+    "extraResources": [
+      "extraResources/**/*"
+    ]
   }
 }
