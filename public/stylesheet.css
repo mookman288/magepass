@@ -1,0 +1,257 @@
+/* Reset Stylesheet 1.6.1 (html5doctor.com/html-5-reset-stylesheet) by Richard Clark (richclarkdesign.com) (cssreset.com) */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img,
+ins, kbd, q, samp, small, strong, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption,
+tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section,
+summary, time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: sans-serif, serif;
+	line-height: 1;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+nav	ul {
+	list-style: none;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+	content: '';
+	content: none;
+}
+
+a {
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
+abbr[title], dfn[title] {
+	border-bottom: 1px dotted;
+	cursor: help;
+}
+
+button, input[type=submit], nav a {
+	padding: 0.50rem 1.00rem;
+	background-color: deepskyblue;
+	border-width: 0;
+	color: white;
+	font-size: 1.20rem;
+	font-weight: bold;
+}
+
+button:hover, input[type=submit]:hover, nav a:hover {
+	background-color: dodgerblue;
+}
+
+button:active, input[type=submit]:active, nav a:active {
+	background-color: blue;
+}
+
+button, input[type=submit], label {
+	cursor: pointer;
+}
+
+del, s {
+	text-decoration: line-through;
+}
+
+h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol {
+	margin-bottom: 1.00rem;
+}
+
+h1:last-child, h2:last-child, h3:last-child, h4:last-child, h5:last-child, h6:last-child, p:last-child, label:last-child,
+legend:last-child, li:last-child, pre:last-child, input:last-child, select:last-child, textarea:last-child, ul:last-child, ol:last-child {
+	margin-bottom: 0;
+}
+
+input, select, textarea {
+	display: block;
+	padding: 0.50rem;
+	border-width: 1px;
+	border-style: solid;
+	border-color: silver;
+	border-radius: 0.50rem;
+	font-family: sans-serif;
+	font-size: 1.00rem;
+}
+
+input, select {
+	vertical-align: middle;
+	max-width: 100%;
+}
+
+ins {
+	background-color: lemonchiffon;
+	color: black;
+	text-decoration: none;
+}
+
+label, legend {
+	display: block;
+	font-weight: bold;
+}
+
+label {
+	margin-right: 1.00rem;
+}
+
+label:last-child {
+	margin-right: 0;
+}
+
+label + input, label + select, label + textarea {
+	margin-top: -0.50rem;
+}
+
+label input[type=radio] {
+	margin: 0 auto;
+}
+
+mark {
+	background-color: lemonchiffon;
+	color: black;
+	font-style: italic;
+	font-weight: bold;
+}
+
+pre code {
+	display: block;
+	padding: 1.00rem;
+	font-size: 0.85rem;
+	background-color: gainsboro;
+	border-radius: 0.50rem;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+ul, ol {
+	padding-left: 1.50rem;
+}
+
+main {
+	display: flex;
+	width: 80%;
+	margin: 5.00rem auto;
+	background-color: whitesmoke;
+	border-radius: 0.50rem;
+}
+
+main > section {
+	margin: 1rem;
+	width: 75%;
+}
+
+h1 {
+	font-size: 2.00rem;
+}
+
+h2 {
+	font-size: 1.75rem;
+}
+
+h3 {
+	font-size: 1.50rem;
+}
+
+h4 {
+	font-size: 1.20rem;
+}
+
+h5 {
+	font-size: 1.10rem;
+}
+
+.alert {
+	width: 100%;
+	margin-bottom: 1.00rem;
+	padding: 1.00rem;
+	border-radius: 0.50rem;
+}
+
+.error {
+	background-color: salmon;
+}
+
+.message {
+	background-color: powderblue;
+}
+
+.success {
+	background-color: palegreen;
+}
+
+.warning {
+	background-color: orange;
+}
+
+.numpad {
+	display: inline-block;
+	margin-bottom: 1.00rem;
+	text-align: center;
+}
+
+.numpad button {
+	margin-right: 1.00rem;
+	margin-bottom: 1.00rem;
+	background: linear-gradient(45deg, tan, silver);
+	border-width: 0.20rem;
+	border-style: outset;
+	border-color: gainsboro;
+	border-radius: 0.25rem;
+	color: black;
+	font-size: 0.80rem;
+}
+
+.numpad button:active {
+	border-style: inset;
+}
+
+.numpad button:last-child {
+	margin-bottom: 0;
+}
+
+main > aside {
+	width: 25%;
+	margin: 1rem;
+	margin-right: 0;
+}
+
+.branding {
+	display: block;
+	margin-bottom: 1.00rem;
+	font-size: 2.50rem;
+	font-family: monospace;
+	font-variant: small-caps;
+	font-weight: bold;
+	letter-spacing: 1.00rem;
+	text-align: center;
+	text-transform: lowercase;
+}
+
+nav a {
+	display: block;
+	border-radius: 0.50rem;
+	text-align: center;
+	text-decoration: none;
+}

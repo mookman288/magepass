@@ -35,7 +35,12 @@ $RECYCLE.BIN/
 ._*
 .Trashes
 
+# Composer
+vendor/
+composer.phar
+
 # NPM
 node_modules/
-dist/*
-!dist/.gitkeep
+
+# PHP
+private/cache
