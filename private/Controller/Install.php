@@ -18,7 +18,7 @@
 			$databaseName = filter_input(INPUT_POST, 'databaseName', FILTER_SANITIZE_STRING);
 			$databaseUser = filter_input(INPUT_POST, 'databaseUser', FILTER_SANITIZE_STRING);
 			$databasePass = filter_input(INPUT_POST, 'databasePass', FILTER_SANITIZE_STRING);
-			$enablePin = filter_input(INPUT_POST, 'enablePin', FILTER_VALIDATE_BOOLEAN);
+			$sessionLength = filter_input(INPUT_POST, 'sessionLength', FILTER_SANITIZE_NUMBER_FLOAT);
 			$hcaptchaSiteKey = filter_input(INPUT_POST, 'hcaptchaSiteKey', FILTER_SANITIZE_STRING);
 			$hcaptchaSecretKey = filter_input(INPUT_POST, 'hcaptchaSecretKey', FILTER_SANITIZE_STRING);
 
@@ -51,9 +51,31 @@
 
 				$app -> update(true);
 
+				$salt = openssl_random_pseudo_bytes(2048);
+				$key = openssl_random_pseudo_bytes(2048);
+				$ciphers = openssl_get_cipher_methods();
+				$cipher = $ciphers[0];
+
+				foreach(array('256', '192', '128') as $bit) {
+					if (in_array("aes-$bit-gcm", $ciphers)) {
+						$cipher = "aes-$bit-gcm";
+
+						break;
+					} elseif (in_array("aes-$bit-ctr", $ciphers)) {
+						$cipher = "aes-$bit-ctr";
+
+						break;
+					}
+				}
+
 				$app -> setConfig(array(
 					'app' => array(
-						'enablePin' => $enablePin,
+						'dev' => false,
+						'inviteCode' => $app -> generateInviteCode($salt),
+						'sessionLength' => $sessionLength,
+						'cipher' => $cipher,
+						'salt' => bin2hex($salt),
+						'key' => bin2hex($key)
 					),
 					'captcha' => array(
 						'hcaptchaSiteKey' => $hcaptchaSiteKey,
@@ -81,6 +103,7 @@
 				'databaseName' => $databaseName,
 				'databaseUser' => $databaseUser,
 				'databasePass' => $databasePass,
+				'sessionLength' => $sessionLength,
 				'enablePin' => $enablePin,
 				'hcaptchaSiteKey' => $hcaptchaSiteKey,
 				'hcaptchaSecretKey' => $hcaptchaSecretKey

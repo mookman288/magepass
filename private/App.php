@@ -21,6 +21,21 @@
 			$this -> method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_METHOD', FILTER_SANITIZE_URL);
 			$this -> request = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_URI', FILTER_SANITIZE_URL);
 			$this -> uri = parse_url($this -> request)['path'] ?? '/';
+
+			if (
+				!empty($this -> config['database']['databaseHost']) &&
+				!empty($this -> config['database']['databasePort']) &&
+				!empty($this -> config['database']['databaseUser']) &&
+				!empty($this -> config['database']['databaseName'])
+			) {
+				$this -> connect(
+					$this -> config['database']['databaseHost'],
+					$this -> config['database']['databasePort'],
+					$this -> config['database']['databaseUser'],
+					$this -> config['database']['databasePass'],
+					$this -> config['database']['databaseName']
+				);
+			}
 		}
 
 		public function connect($databaseHost, $databasePort, $databaseUser, $databasePass = null, $databaseName = null) {
@@ -36,6 +51,46 @@
 			$this -> db = new \PDO($dsn, $databaseUser, $databasePass, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_EMULATE_PREPARES => false));
 		}
 
+		public function decrypt($data, $key) {
+			$ivLength = openssl_cipher_iv_length($app -> config['app']['cipher']);
+
+			if (stripos($app -> config['app']['cipher'], 'gcm') !== false) {
+				$tag = substr($data, 0, 16);
+				$iv = substr($data, 16, $ivLength);
+				$data = substr($data, 16 + $ivLength);
+				$content = openssl_decrypt($data, $app -> config['app']['cipher'], $key, 0, $iv, $tag);
+			} else {
+				$hmac = substr($data, 0, 64);
+				$iv = substr($data, 64, $ivLength);
+				$data = substr($data, 64 + $ivLength);
+				$content = openssl_decrypt($data, $app -> config['app']['cipher'], $key, OPENSSL_RAW_DATA, $iv);
+				$compare = hash_hmac('sha512', $content, $key, true);
+
+				if (!hash_equals($hmac, $compare)) {
+					throw new \ErrorException("Decrypted data failed hmac authentication.");
+				}
+			}
+
+			return $content;
+		}
+
+		public function encrypt($data, $key) {
+			$ivLength = openssl_cipher_iv_length($app -> config['app']['cipher']);
+			$iv = openssl_random_pseudo_bytes($ivLength);
+
+			if (stripos($app -> config['app']['cipher'], 'gcm') !== false) {
+				$tag = openssl_random_psuedo_bytes(16);
+				$content = openssl_encrypt($data, $app -> config['app']['cipher'], $key, 0, $iv, $tag);
+				$content = sprintf("%s%s%s", $tag, $iv, $content);
+			} else {
+				$content = openssl_encrypt($data, $app -> config['app']['cipher'], $key, OPENSSL_RAW_DATA, $iv);
+				$hmac = hash_hmac('sha512', $content, $key, true);
+				$content = sprintf("%s%s%s", $hmac, $iv, $content);
+			}
+
+			return $content;
+		}
+
 		public function error($code = 500, $message = null) {
 			$this -> code = intval($code) ?? 500;
 
@@ -44,14 +99,38 @@
 			throw new \ErrorException($message);
 		}
 
+		public function generateInviteCode($salt) {
+			return hash('crc32b', $salt . date('YmdH'));
+		}
+
 		private function getConfig() {
 			if (file_exists($this -> path('private/config.ini'))) {
 				$config = parse_ini_file($this -> path('private/config.ini'), true);
+
+				if (!empty($config['app']['salt'])) {
+					$config['app']['salt'] = hex2bin($config['app']['salt']);
+				}
+
+				if (!empty($config['app']['key'])) {
+					$config['app']['key'] = hex2bin($config['app']['key']);
+				}
 
 				return $config;
 			}
 
 			return false;
+		}
+
+		public function getKey($password, $salt) {
+			return hash_pbkdf2('sha512', $password, $salt, 100000, 2048, true);
+		}
+
+		public function hash($value) {
+			return password_hash($value, PASSWORD_DEFAULT);
+		}
+
+		public function hashVerify($value, $hash) {
+			return password_verify($value, $hash);
 		}
 
 		public function render($file, $parameters = array()) {
@@ -72,6 +151,11 @@
 		}
 
 		private function session() {
+			if (!empty($this -> config['app']['sessionLength'])) {
+				ini_set('session.gc_maxlifetime', round(60 * $this -> config['app']['sessionLength']));
+				session_set_cookie_params(round(60 * $this -> config['app']['sessionLength']));
+			}
+
 			if (!session_name()) session_start();
 
 			$_SESSION['error'] = array();

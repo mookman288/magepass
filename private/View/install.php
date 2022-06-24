@@ -39,17 +39,24 @@ location / {
 	<input id="databaseUser" name="databaseUser" type="text" size="40" value="<?php print($databaseUser ?? null); ?>" />
 	<label for="databasePass">Database Password</label>
 	<input id="databasePass" name="databasePass" type="text" size="40" value="<?php print($databasePass ?? null); ?>" />
-	<fieldset>
-		<legend>Enable PIN System (this requires each user to set a PIN designed to discourage keylogging, but may disable autofill)</legend>
-		<label for="enablePinYes">
-			Yes
-			<input id="enablePinYes" name="enablePin" type="radio" value="true"<?php if (!empty($enablePin)) { ?> checked="checked"<?php } ?> />
-		</label>
-		<label for="enablePinNo">
-			No
-			<input id="enablePinNo" name="enablePin" type="radio" value="false"<?php if (empty($enablePin)) { ?> checked="checked"<?php } ?> />
-		</label>
-	</fieldset>
+	<label for="sessionLength">Session Length</label>
+	<select id="sessionLength" name="sessionLength">
+		<option value="0">Server Default Setting</option>
+		<option value="0.16666667"<?php if (($sessionLength ?? null) == 0.16666667) { ?> selected="selected"<?php } ?>>
+			10 Minutes
+		</option>
+		<option value="0.5"<?php if (($sessionLength ?? null) == 0.5) { ?> selected="selected"<?php } ?>>
+			30 Minutes
+		</option>
+		<option value="1"<?php if (($sessionLength ?? null) == 1) { ?> selected="selected"<?php } ?>>
+			1 Hour
+		</option>
+	<?php for ($i = 2; $i <= 8; $i++) { ?>
+		<option value="<?php print($i); ?>"<?php if (($sessionLength ?? null) == $i) { ?> selected="selected"<?php } ?>>
+			<?php print($i); ?> Hours
+		</option>
+	<?php } ?>
+	</select>
 	<label for="hcaptchaSiteKey">HCaptcha Site Key (leave this blank to disable CAPTCHA)</label>
 	<input id="hcaptchaSiteKey" name="hcaptchaSiteKey" type="text" size="40" value="<?php print($hcaptchaSiteKey ?? null); ?>" />
 	<label for="hcaptchaSecretKey">HCaptcha Secret Key (leave this blank to disable CAPTCHA)</label>

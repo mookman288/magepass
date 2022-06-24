@@ -9,6 +9,7 @@
 		if (!empty($app -> config)) {
 			$routes = array(
 				'unprotected' => array(
+					'/register' => 'Register',
 					'/login' => 'Login'
 				),
 				'protected' => array(
@@ -63,7 +64,7 @@
 				}
 			}
 		}
-die();
+
 		$render = ob_get_clean();
 
 		if (!$render) {

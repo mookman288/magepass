@@ -52,6 +52,9 @@ button, input[type=submit], nav a {
 	padding: 0.50rem 1.00rem;
 	background-color: deepskyblue;
 	border-width: 0;
+	border-bottom: 0.25rem;
+	border-style: solid;
+	border-color: cyan;
 	color: white;
 	font-size: 1.20rem;
 	font-weight: bold;
@@ -59,10 +62,12 @@ button, input[type=submit], nav a {
 
 button:hover, input[type=submit]:hover, nav a:hover {
 	background-color: dodgerblue;
+	border-color: deepskyblue;
 }
 
 button:active, input[type=submit]:active, nav a:active {
 	background-color: blue;
+	border-color: dodgerblue;
 }
 
 button, input[type=submit], label {
@@ -229,6 +234,14 @@ h5 {
 
 .numpad button:last-child {
 	margin-bottom: 0;
+}
+
+.privacy.on {
+	filter: blur(1rem);
+}
+
+.radio {
+	display: inline-block;
 }
 
 main > aside {

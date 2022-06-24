@@ -12,19 +12,24 @@
 				<header>
 					<span class="branding">MagePass</span>
 				</header>
+				<nav>
+					<ul>
 			<?php
 				switch($app -> route) {
 					case 'Login':
 			?>
-				<nav>
-					<ul>
 						<li><a href="register">Register Account</a></li>
-					</ul>
-				</nav>
+			<?php
+					break;
+					case 'Register':
+			?>
+						<li><a href="login">Login</a></li>
 			<?php
 					break;
 				}
-			?>
+				?>
+					</ul>
+				</nav>
 			</aside>
 			<section>
 			<?php if (!empty($_SESSION['error'])) { ?>
