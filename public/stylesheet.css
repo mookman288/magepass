@@ -188,6 +188,19 @@ h5 {
 	font-size: 1.10rem;
 }
 
+.card {
+	display: inline-block;
+	width: 33.33%;
+	margin-bottom: 1.00rem;
+	padding: 1.00rem;
+	background-color: white;
+	border-radius: 0.50rem;
+}
+
+.card input[type=password] {
+	width: 100%;
+}
+
 .alert {
 	width: 100%;
 	margin-bottom: 1.00rem;

@@ -13,16 +13,18 @@
 		public $routeName;
 		public $title;
 		public $uri;
+		public $user;
+		public $userKey;
 
 		public function __construct() {
-			$this -> session();
-
 			$this -> root = realpath(sprintf("%s/../", __DIR__));
 			$this -> config = $this -> getConfig();
 			$this -> method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_METHOD', FILTER_SANITIZE_URL);
 			$this -> request = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_URI', FILTER_SANITIZE_URL);
 
 			$this -> uri = parse_url($this -> request)['path'] ?? '/';
+
+			$this -> session();
 
 			if (
 				!empty($this -> config['database']['databaseHost']) &&
@@ -53,19 +55,20 @@
 			$this -> db = new \PDO($dsn, $databaseUser, $databasePass, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_EMULATE_PREPARES => false));
 		}
 
-		public function decrypt($data, $key) {
-			$ivLength = openssl_cipher_iv_length($app -> config['app']['cipher']);
+		public function decrypt($data, $key = null) {
+			$key = $key ?? $this -> config['app']['key'];
+			$ivLength = openssl_cipher_iv_length($this -> config['app']['cipher']);
 
-			if (stripos($app -> config['app']['cipher'], 'gcm') !== false) {
+			if (stripos($this -> config['app']['cipher'], 'gcm') !== false) {
 				$tag = substr($data, 0, 16);
 				$iv = substr($data, 16, $ivLength);
 				$data = substr($data, 16 + $ivLength);
-				$content = openssl_decrypt($data, $app -> config['app']['cipher'], $key, 0, $iv, $tag);
+				$content = openssl_decrypt($data, $this -> config['app']['cipher'], $key, 0, $iv, $tag);
 			} else {
 				$hmac = substr($data, 0, 64);
 				$iv = substr($data, 64, $ivLength);
 				$data = substr($data, 64 + $ivLength);
-				$content = openssl_decrypt($data, $app -> config['app']['cipher'], $key, OPENSSL_RAW_DATA, $iv);
+				$content = openssl_decrypt($data, $this -> config['app']['cipher'], $key, OPENSSL_RAW_DATA, $iv);
 				$compare = hash_hmac('sha512', $content, $key, true);
 
 				if (!hash_equals($hmac, $compare)) {
@@ -73,19 +76,31 @@
 				}
 			}
 
+			//https://stackoverflow.com/a/1369946/1617361
+			$unserialized = @unserialize($content);
+
+			if ($unserialized !== false && $unserialized !== 'b:0;') {
+				$content = $unserialized;
+			}
+
 			return $content;
 		}
 
-		public function encrypt($data, $key) {
-			$ivLength = openssl_cipher_iv_length($app -> config['app']['cipher']);
+		public function encrypt($data, $key = null) {
+			$key = $key ?? $this -> config['app']['key'];
+			$ivLength = openssl_cipher_iv_length($this -> config['app']['cipher']);
 			$iv = openssl_random_pseudo_bytes($ivLength);
 
-			if (stripos($app -> config['app']['cipher'], 'gcm') !== false) {
-				$tag = openssl_random_psuedo_bytes(16);
-				$content = openssl_encrypt($data, $app -> config['app']['cipher'], $key, 0, $iv, $tag);
+			if (is_array($data) || is_object($data)) {
+				$data = serialize($data);
+			}
+
+			if (stripos($this -> config['app']['cipher'], 'gcm') !== false) {
+				$tag = openssl_random_pseudo_bytes(16);
+				$content = openssl_encrypt($data, $this -> config['app']['cipher'], $key, 0, $iv, $tag);
 				$content = sprintf("%s%s%s", $tag, $iv, $content);
 			} else {
-				$content = openssl_encrypt($data, $app -> config['app']['cipher'], $key, OPENSSL_RAW_DATA, $iv);
+				$content = openssl_encrypt($data, $this -> config['app']['cipher'], $key, OPENSSL_RAW_DATA, $iv);
 				$hmac = hash_hmac('sha512', $content, $key, true);
 				$content = sprintf("%s%s%s", $hmac, $iv, $content);
 			}
@@ -178,6 +193,11 @@
 			$_SESSION['success'] = array();
 			$_SESSION['warning'] = array();
 			$_SESSION['message'] = array();
+
+			if (!empty($_SESSION['key']) && !empty($_SESSION['user'])) {
+				$this -> userKey = $this -> decrypt($_SESSION['key']);
+				$this -> user = $this -> decrypt($_SESSION['user']);
+			}
 		}
 
 		public function setConfig($config) {

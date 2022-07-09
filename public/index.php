@@ -48,7 +48,7 @@
 							$parameters = $results;
 
 							if ($type == 'protected') {
-								if (empty($_SESSION['user']) || empty($_SESSION['key'])) {
+								if (empty($app -> user) || empty($app -> userKey)) {
 									$_SESSION['redirect'] = $app -> uri;
 
 									header("Location: " . $app -> getUrl('login'), TRUE, 302);

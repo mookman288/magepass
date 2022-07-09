@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title><?php print($app -> title ?? null); ?> | MagePass</title>
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="<?php $app -> url('favicon.ico'); ?>" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="<?php $app -> url('stylesheet.css'); ?>" />
 	</head>
@@ -18,12 +18,12 @@
 				switch($app -> routeName) {
 					case 'Login':
 			?>
-						<li><a href="register">Register Account</a></li>
+						<li><a href="<?php $app -> url('register'); ?>">Register Account</a></li>
 			<?php
 					break;
 					case 'Register':
 			?>
-						<li><a href="login">Login</a></li>
+						<li><a href="<?php $app -> url('login'); ?>">Login</a></li>
 			<?php
 					break;
 					case 'Home':
@@ -32,9 +32,9 @@
 					case 'Archive':
 					case 'ArchiveCreate':
 			?>
-						<li><a href="home">Home &ndash; Vaults</a></li>
-						<li><a href="vault/create">Create Vault</a></li>
-						<li><a href="logout">Logout</a></li>
+						<li><a href="<?php $app -> url('home'); ?>">Home &ndash; Vaults</a></li>
+						<li><a href="<?php $app -> url('vault/create'); ?>">Create Vault</a></li>
+						<li><a href="<?php $app -> url('logout'); ?>">Logout</a></li>
 						<li style="text-align: center;">
 							<hr />
 							<label for="inviteCode">Registration Invite Code</label>
@@ -79,9 +79,6 @@
 			<?php } ?>
 				<?php print($app -> body ?? null); ?>
 			</section>
-			<footer>
-
-			</footer>
 		</main>
 	</body>
 </html>

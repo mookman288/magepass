@@ -7,9 +7,15 @@
 		public function get(App $app) {
 			$vaults = array();
 
-			$result = $app -> db -> query("SELECT * FROM vault");
+			$statement = $app -> db -> prepare("SELECT * FROM vault WHERE user_id = :user_id");
 
-			while ($row = $result -> fetchObject()) {
+			$statement -> bindValue(':user_id', $app -> user -> id);
+
+			$statement -> execute();
+
+			while ($row = $statement -> fetchObject()) {
+				$row -> name = $app -> decrypt($row -> name, $app -> userKey);
+
 				$vaults[] = $row;
 			}
 

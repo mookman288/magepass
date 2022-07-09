@@ -11,6 +11,7 @@
 		public function post(App $app) {
 			$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
 			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+			$confirm = filter_input(INPUT_POST, 'confirm', FILTER_SANITIZE_STRING);
 
 			try {
 				if (!$name) {
@@ -29,13 +30,13 @@
 					"INSERT INTO vault (user_id, name, password) VALUES (:user_id, :name, :password)"
 				);
 
-				$statement -> bindValue(':user_id', $_SESSION['user']['id']);
-				$statement -> bindValue(':name',  $app -> encrypt($name, $key));
+				$statement -> bindValue(':user_id', $app -> user -> id);
+				$statement -> bindValue(':name',  $app -> encrypt($name, $app -> userKey));
 				$statement -> bindValue(':password', $app -> hash($password));
 
 				$statement -> execute();
 
-				header("Location: home", TRUE, 302);
+				header("Location: " . $app -> getUrl("home"), TRUE, 302);
 			} catch(\ErrorException $e) {
 				$_SESSION['error'][] = $e -> getMessage();
 			}
