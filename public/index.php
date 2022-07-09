@@ -10,10 +10,14 @@
 			$routes = array(
 				'unprotected' => array(
 					'/register' => 'Register',
-					'/login' => 'Login'
+					'/login' => 'Login',
+					'/logout' => 'Logout'
 				),
 				'protected' => array(
-					'/' => 'Home'
+					'/' => 'Home',
+					'/home' => 'Home',
+					'/vault/create' => 'VaultCreate',
+					'/vault/(.*)' => 'Vault'
 				)
 			);
 		} else {
@@ -31,7 +35,8 @@
 				preg_match(sprintf("/^%s$/", preg_quote($pattern, '/')), $app -> uri, $results);
 
 				if (!empty($results)) {
-					$app -> route = $controller;
+					$app -> route = $pattern;
+					$app -> routeName = $controller;
 					$controllerPath = $app -> path("private/Controller/{$controller}.php");
 
 					if (file_exists($controllerPath)) {
@@ -43,14 +48,12 @@
 							$parameters = $results;
 
 							if ($type == 'protected') {
-
-								if (empty($_SESSION['user'])) {
+								if (empty($_SESSION['user']) || empty($_SESSION['key'])) {
 									$_SESSION['redirect'] = $app -> uri;
-									$app -> route = "Login";
 
-									$app -> view('login');
+									header("Location: " . $app -> getUrl('login'), TRUE, 302);
 
-									break 2;
+									exit;
 								}
 							}
 

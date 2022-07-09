@@ -78,7 +78,7 @@ del, s {
 	text-decoration: line-through;
 }
 
-h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol {
+h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol, .h-captcha {
 	margin-bottom: 1.00rem;
 }
 
@@ -94,6 +94,7 @@ input, select, textarea {
 	border-style: solid;
 	border-color: silver;
 	border-radius: 0.50rem;
+	box-sizing: border-box;
 	font-family: sans-serif;
 	font-size: 1.00rem;
 }
@@ -260,6 +261,10 @@ main > aside {
 	letter-spacing: 1.00rem;
 	text-align: center;
 	text-transform: lowercase;
+}
+
+nav ul {
+	padding: 0;
 }
 
 nav a {

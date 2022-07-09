@@ -10,6 +10,7 @@
 		public $method;
 		public $request;
 		public $route;
+		public $routeName;
 		public $title;
 		public $uri;
 
@@ -20,6 +21,7 @@
 			$this -> config = $this -> getConfig();
 			$this -> method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_METHOD', FILTER_SANITIZE_URL);
 			$this -> request = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_URI', FILTER_SANITIZE_URL);
+
 			$this -> uri = parse_url($this -> request)['path'] ?? '/';
 
 			if (
@@ -125,12 +127,26 @@
 			return hash_pbkdf2('sha512', $password, $salt, 100000, 2048, true);
 		}
 
+		public function getUrl($relative = null) {
+			$url = '';
+
+			for ($i = 1; $i < substr_count($this -> route, '/'); $i++) {
+				$url .= "../";
+			}
+
+			return $url . $relative;
+		}
+
 		public function hash($value) {
 			return password_hash($value, PASSWORD_DEFAULT);
 		}
 
 		public function hashVerify($value, $hash) {
 			return password_verify($value, $hash);
+		}
+
+		public function path($pathFromRoot) {
+			return sprintf("%s/%s", $this -> root, escapeshellcmd($pathFromRoot));
 		}
 
 		public function render($file, $parameters = array()) {
@@ -156,7 +172,7 @@
 				session_set_cookie_params(round(60 * $this -> config['app']['sessionLength']));
 			}
 
-			if (!session_name()) session_start();
+			session_start();
 
 			$_SESSION['error'] = array();
 			$_SESSION['success'] = array();
@@ -208,6 +224,59 @@
 			}
 		}
 
+		public function url($relative = null) {
+			print($this -> getUrl($relative));
+		}
+
+		public function validateCaptcha($response) {
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, "https://hcaptcha.com/siteverify");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array(
+				'secret' => $this -> config['captcha']['hcaptchaSecretKey'],
+				'response' => $response
+			)));
+			curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+
+			$curlResponse = curl_exec($ch);
+
+			$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+			if (gettype($ch) == 'resource') {
+				if (curl_errno($ch)) {
+					throw new \ErrorException(sprintf('There was a CAPTCHA connection error: %s', curl_errno($ch)));
+
+					return false;
+				}
+
+				curl_close($ch);
+			}
+
+			if ($curlResponse) {
+				switch($code) {
+					case 200:
+					case 206:
+						$responseData = json_decode($curlResponse);
+
+						if ($responseData -> success) {
+							return true;
+						}
+					break;
+					default:
+						throw new \ErrorException(sprintf('There was a CAPTCHA connection error: %s', $code));
+
+						return false;
+					break;
+				}
+			}
+
+			return false;
+		}
+
 		public function view($file, $parameters = array()) {
 			ob_start();
 
@@ -216,10 +285,6 @@
 			$this -> body = ob_get_clean() ?? null;
 
 			$this -> render('layout', $parameters);
-		}
-
-		public function path($pathFromRoot) {
-			return sprintf("%s/%s", $this -> root, escapeshellcmd($pathFromRoot));
 		}
 	}
 

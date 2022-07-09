@@ -11,8 +11,15 @@
 		public function post(App $app) {
 			$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
 			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+			$captcha = filter_input(INPUT_POST, 'h-captcha-response', FILTER_SANITIZE_STRING);
 
 			try {
+				if (!empty($app -> config['captcha']['hcaptchaSiteKey']) && !empty($app -> config['captcha']['hcaptchaSecretKey'])) {
+					if (!$app -> validateCaptcha($captcha)) {
+						throw new \ErrorException("Your CAPTCHA response was incorrect.");
+					}
+				}
+
 				$users = $app -> db -> query("SELECT * FROM user");
 
 				while ($row = $users -> fetchObject()) {
@@ -20,8 +27,10 @@
 						if ($app -> hashVerify($password, $row -> password)) {
 							$user = $row;
 
-							$_SESSION['key'] = $app -> getKey($password, $salt);
+							$_SESSION['key'] = $app -> getKey($password, $user -> salt);
 							$_SESSION['user'] = $user;
+
+							header("Location: " . $app -> getUrl('home'), TRUE, 302);
 						}
 					}
 				}
@@ -31,8 +40,6 @@
 				}
 
 
-
-				header("Location: home", TRUE, 302);
 			} catch(\ErrorException $e) {
 				$_SESSION['error'][] = $e -> getMessage();
 			}
