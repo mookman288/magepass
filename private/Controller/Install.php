@@ -9,10 +9,18 @@
 				$_SESSION['error'][] = "This environment does not satisfy the requirement of at least PHP 7.3.";
 			}
 
-			$app -> view('install');
+			$_SESSION['databaseNameExample'] = substr(
+				sprintf("%s%s",
+					range('a', 'z')[random_int(0, 25)],
+					bin2hex(openssl_random_pseudo_bytes(16))
+				),
+			0, 16);
+
+			$app -> view('install', array('databaseNameExample' => $_SESSION['databaseNameExample']));
 		}
 
 		public function post(App $app) {
+			$appName = filter_input(INPUT_POST, 'appName', FILTER_SANITIZE_STRING);
 			$databaseHost = filter_input(INPUT_POST, 'databaseHost', FILTER_SANITIZE_STRING);
 			$databasePort = filter_input(INPUT_POST, 'databasePort', FILTER_SANITIZE_STRING);
 			$databaseName = filter_input(INPUT_POST, 'databaseName', FILTER_SANITIZE_STRING);
@@ -23,6 +31,10 @@
 			$hcaptchaSecretKey = filter_input(INPUT_POST, 'hcaptchaSecretKey', FILTER_SANITIZE_STRING);
 
 			try {
+				if (empty($appName)) {
+					$appName = 'MageLock';
+				}
+
 				if (empty($databaseHost)) {
 					$databaseHost = 'localhost';
 				}
@@ -31,23 +43,22 @@
 					$databasePort = 3306;
 				}
 
-				$app -> connect($databaseHost, $databasePort, $databaseUser, $databasePass, $databaseName);
 
-				if (empty($databaseName)) {
-					$databaseName = 'magepass';
+				if ($databaseName == $_SESSION['databaseNameExample']) {
+					$app -> connect($databaseHost, $databasePort, $databaseUser, $databasePass, '');
 
-					$app -> db -> query("CREATE DATABASE IF NOT EXISTS `magepass`");
+					$app -> db -> query("CREATE DATABASE IF NOT EXISTS `{$databaseName}`");
 
 					$app -> db -> query(sprintf(
-						"GRANT ALL ON `magepass`.* TO %s@%s",
+						"GRANT ALL ON `{$databaseName}`.* TO %s@%s",
 						$app -> db -> quote($databaseUser),
 						$app -> db -> quote($databaseHost ?? 'localhost')
 					));
 
 					$app -> db -> query("FLUSH PRIVILEGES");
-
-					$app -> connect($databaseHost, $databasePort, $databaseUser, $databasePass, $databaseName);
 				}
+
+				$app -> connect($databaseHost, $databasePort, $databaseUser, $databasePass, $databaseName);
 
 				$app -> update(true);
 
@@ -70,6 +81,7 @@
 
 				$app -> setConfig(array(
 					'app' => array(
+						'name' => $appName,
 						'dev' => false,
 						'inviteCode' => $app -> generateInviteCode($salt),
 						'sessionLength' => $sessionLength,
@@ -104,7 +116,6 @@
 				'databaseUser' => $databaseUser,
 				'databasePass' => $databasePass,
 				'sessionLength' => $sessionLength,
-				'enablePin' => $enablePin,
 				'hcaptchaSiteKey' => $hcaptchaSiteKey,
 				'hcaptchaSecretKey' => $hcaptchaSecretKey
 			));
