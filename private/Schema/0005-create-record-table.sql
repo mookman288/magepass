@@ -1,10 +1,11 @@
-CREATE TABLE `archive` (
+CREATE TABLE `record` (
 	`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`vault_id` BIGINT UNSIGNED NOT NULL,
+	`archive_id` BIGINT UNSIGNED NOT NULL,
 	`name` MEDIUMBLOB NOT NULL,
+	`content` LONGBLOB NULL,
 	PRIMARY KEY (`id`),
-	INDEX `vault_id_index` (`vault_id`),
-	FOREIGN KEY (`vault_id`) REFERENCES vault(`id`) ON DELETE CASCADE
+	INDEX `archive_id_index` (`archive_id`),
+	FOREIGN KEY (`archive_id`) REFERENCES archive(`id`) ON DELETE CASCADE
 );
