@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title><?php print($app -> title ?? null); ?> | MagePass</title>
+		<title><?php print($app -> title ?? null); ?> | <?php print($app -> config['app']['name']); ?></title>
 		<link rel="icon" href="<?php $app -> url('favicon.ico'); ?>" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="<?php $app -> url('stylesheet.css'); ?>" />
@@ -10,7 +10,7 @@
 		<main>
 			<aside>
 				<header>
-					<span class="branding">MagePass</span>
+					<span class="branding"><?php print($app -> config['app']['name']); ?></span>
 				</header>
 				<nav>
 					<ul>
@@ -31,6 +31,8 @@
 					case 'VaultCreate':
 					case 'Archive':
 					case 'ArchiveCreate':
+					case 'Record':
+					case 'RecordCreate':
 			?>
 						<li><a href="<?php $app -> url('home'); ?>">Home &ndash; Vaults</a></li>
 						<li><a href="<?php $app -> url('vault/create'); ?>">Create Vault</a></li>
@@ -81,4 +83,5 @@
 			</section>
 		</main>
 	</body>
+	<script type="text/javascript" src="<?php $app -> url('script.js'); ?>"></script>
 </html>

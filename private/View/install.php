@@ -27,6 +27,9 @@ location / {
 }</code></pre>
 <h2>Setup</h2>
 <form action="" method="post">
+	<label for="appName">Application Name</label>
+	<input id="appName" name="appName" type="text" size="40" value="<?php print($appName ?? null); ?>"
+		placeholder="MageLock" />
 	<label for="databaseHost">Database Host</label>
 	<input id="databaseHost" name="databaseHost" type="text" size="40" value="<?php print($databaseHost ?? null); ?>"
 		placeholder="localhost" />
@@ -34,7 +37,8 @@ location / {
 	<input id="databasePort" name="databasePort" type="text" size="40" value="<?php print($databasePort ?? null); ?>"
 		placeholder="3306" />
 	<label for="databaseName">Database Name</label>
-	<input id="databaseName" name="databaseName" type="text" size="40" value="<?php print($databaseName ?? null); ?>" />
+	<input id="databaseName" name="databaseName" type="text" size="40"
+		value="<?php print($databaseName ?? $databaseNameExample); ?>" />
 	<label for="databaseUser">Database Username</label>
 	<input id="databaseUser" name="databaseUser" type="text" size="40" value="<?php print($databaseUser ?? null); ?>" />
 	<label for="databasePass">Database Password</label>

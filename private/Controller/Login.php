@@ -38,7 +38,6 @@
 				if (empty($user)) {
 					throw new \ErrorException("This user account could not be found. Please try again.");
 				}
-
 			} catch(\ErrorException $e) {
 				$_SESSION['error'][] = $e -> getMessage();
 			}

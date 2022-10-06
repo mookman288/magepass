@@ -55,6 +55,7 @@ button, input[type=submit], nav a {
 	border-bottom: 0.25rem;
 	border-style: solid;
 	border-color: cyan;
+	border-radius: 0.50rem;
 	color: white;
 	font-size: 1.20rem;
 	font-weight: bold;
@@ -78,7 +79,7 @@ del, s {
 	text-decoration: line-through;
 }
 
-h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol, .h-captcha {
+h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol, form, .h-captcha {
 	margin-bottom: 1.00rem;
 }
 
@@ -188,13 +189,23 @@ h5 {
 	font-size: 1.10rem;
 }
 
+p {
+	line-height: 1.5;
+}
+
 .card {
 	display: inline-block;
-	width: 33.33%;
+	width: 48.50%;
+	margin-right: 1.00%;
 	margin-bottom: 1.00rem;
 	padding: 1.00rem;
 	background-color: white;
 	border-radius: 0.50rem;
+}
+
+.card:nth-child(even) {
+	margin-right: 0;
+	margin-left: 1.00%;
 }
 
 .card input[type=password] {
@@ -258,14 +269,51 @@ h5 {
 	display: inline-block;
 }
 
+#addRecord {
+	margin-bottom: 1.00rem;
+	background-color: plum;
+	border-color: thistle;
+}
+
+#addRecord:hover {
+	background-color: blueviolet;
+	border-color: plum;
+}
+
+#addRecord:active {
+	background-color: indigo;
+	border-color: blueviolet;
+}
+
+.addRecord {
+	margin-bottom: 1.00rem;
+}
+
+#deleteRecord {
+	margin-bottom: 1.00rem;
+	background-color: deeppink;
+	border-color: hotpink;
+}
+
+#deleteRecord:hover {
+	background-color: mediumvioletred;
+	border-color: deeppink;
+}
+
+#deleteRecord:active {
+	background-color: darkmagenta;
+	border-color: mediumvioletred;
+}
+
 main > aside {
 	width: 25%;
-	margin: 1rem;
+	margin: 1.00rem;
 	margin-right: 0;
 }
 
 .branding {
 	display: block;
+	margin-right: -0.50rem;
 	margin-bottom: 1.00rem;
 	font-size: 2.50rem;
 	font-family: monospace;
