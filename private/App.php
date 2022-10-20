@@ -120,6 +120,44 @@
 			return hash('crc32b', $salt . date('YmdH'));
 		}
 
+		public function getArchive($id) {
+			$vaultKey = $this -> decrypt($_SESSION['vaultKey']);
+
+			$statement = $this -> db -> prepare("SELECT * FROM archive WHERE id = :id");
+
+			$statement -> bindValue(':id', $id);
+
+			$statement -> execute();
+
+			$archive = $statement -> fetchObject();
+
+			$archive -> name = $this -> decrypt($archive -> name, $vaultKey);
+			$archive -> content = $this -> getRecords($archive -> id);
+
+			return $archive;
+		}
+
+		public function getArchives($vaultId) {
+			$vaultKey = $this -> decrypt($_SESSION['vaultKey']);
+
+			$archives = array();
+
+			$statement = $this -> db -> prepare("SELECT * FROM archive WHERE vault_id = :vault_id");
+
+			$statement -> bindValue(':vault_id', $vaultId);
+
+			$statement -> execute();
+
+			while ($archive = $statement -> fetchObject()) {
+				$archive -> name = $this -> decrypt($archive -> name, $vaultKey);
+				$archive -> content = $this -> getRecords($archive -> id);
+
+				$archives[$archive -> id] = $archive;
+			}
+
+			return $archives;
+		}
+
 		private function getConfig() {
 			if (file_exists($this -> path('private/config.ini'))) {
 				$config = parse_ini_file($this -> path('private/config.ini'), true);
@@ -152,12 +190,83 @@
 			return $url . $relative;
 		}
 
+		public function getRecords($archiveId) {
+			$vaultKey = $this -> decrypt($_SESSION['vaultKey']);
+
+			$records = array();
+			$recordStatement = $this -> db -> prepare("SELECT * FROM record WHERE archive_id = :archive_id");
+
+			$recordStatement -> bindValue(':archive_id', $archiveId);
+
+			$recordStatement -> execute();
+
+			while ($record = $recordStatement -> fetchObject()) {
+				$record -> name = $this -> decrypt($record -> name, $vaultKey);
+				$record -> content = $this -> decrypt($record -> content, $vaultKey);
+
+				$records[$record -> id] = $record;
+			}
+
+			return $records;
+		}
+
+		public function getVault($id) {
+			try {
+				$statement = $this -> db -> prepare("SELECT * FROM vault WHERE id = :id AND user_id = :user_id");
+
+				$statement -> bindValue(':id', $id);
+				$statement -> bindValue(':user_id', $this -> user -> id);
+
+				$statement -> execute();
+
+				while ($row = $statement -> fetchObject()) {
+					$statement = $this -> db -> prepare("SELECT * FROM vault WHERE id = :id AND user_id = :user_id");
+
+					$statement -> bindValue(':id', $id);
+					$statement -> bindValue(':user_id', $this -> user -> id);
+
+					$statement -> execute();
+
+					$vault = $statement -> fetchObject();
+
+					$vault -> name = $this -> decrypt($vault -> name, $this -> userKey);
+
+					break;
+				}
+			} catch(\ErrorException $e) {
+				$_SESSION['error'][] = $e -> getMessage();
+			}
+
+			return $vault;
+		}
+
 		public function hash($value) {
 			return password_hash($value, PASSWORD_DEFAULT);
 		}
 
 		public function hashVerify($value, $hash) {
 			return password_verify($value, $hash);
+		}
+
+		public function json($data, $status = 'OK') {
+			header('Content-Type: application/json');
+
+			switch($status) {
+				case 'ERROR':
+					http_status_code(500);
+				break;
+				case 'FORBIDDEN':
+					http_status_code(403);
+				break;
+				case 'USERERROR':
+					http_status_code(400);
+				break;
+			}
+
+			print(json_encode(array(
+				'status' => $status,
+				'data' => $data
+			)));
 		}
 
 		public function path($pathFromRoot) {
