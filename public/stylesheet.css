@@ -13,6 +13,10 @@ summary, time, mark, audio, video {
 	box-sizing: border-box;
 }
 
+*:disabled {
+	cursor: not-allowed !important;
+}
+
 body {
 	font-family: sans-serif, serif;
 	line-height: 1;
@@ -26,14 +30,15 @@ nav	ul {
 	list-style: none;
 }
 
-blockquote, q {
-	quotes: none;
+h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol, form, .h-captcha {
+	margin-bottom: 1.00rem;
 }
 
-blockquote:before, blockquote:after, q:before, q:after {
-	content: '';
-	content: none;
+h1:last-child, h2:last-child, h3:last-child, h4:last-child, h5:last-child, h6:last-child, p:last-child, label:last-child,
+legend:last-child, li:last-child, pre:last-child, input:last-child, select:last-child, textarea:last-child, ul:last-child, ol:last-child {
+	margin-bottom: 0;
 }
+
 
 a {
 	margin: 0;
@@ -43,49 +48,70 @@ a {
 	background: transparent;
 }
 
+a, .link {
+	color: darkblue;
+	border-color: darkblue;
+	border-width: 0;
+	border-bottom: 2px;
+	border-style: solid;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a:hover, .link:hover {
+	color: blue;
+	border-color: blue;
+}
+
 abbr[title], dfn[title] {
 	border-bottom: 1px dotted;
 	cursor: help;
 }
 
-button, input[type=submit], nav a {
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+	content: '';
+	content: none;
+}
+
+button, .button, input[type=submit], nav a {
 	padding: 0.50rem 1.00rem;
 	background-color: deepskyblue;
 	border-width: 0;
 	border-bottom: 0.25rem;
 	border-style: solid;
 	border-color: cyan;
+	border-bottom-color: cyan;
 	border-radius: 0.50rem;
 	color: white;
 	font-size: 1.20rem;
 	font-weight: bold;
 }
 
-button:hover, input[type=submit]:hover, nav a:hover {
+input[type=submit], button[type=submit] {
+	display: inline-block;
+	margin-bottom: 0;
+}
+
+button:hover, .button:hover, input[type=submit]:hover, nav a:hover {
 	background-color: dodgerblue;
 	border-color: deepskyblue;
 }
 
-button:active, input[type=submit]:active, nav a:active {
+button:active, .button:active, input[type=submit]:active, nav a:active {
 	background-color: blue;
 	border-color: dodgerblue;
 }
 
-button, input[type=submit], label {
+button, .button, input[type=submit], label {
 	cursor: pointer;
 }
 
 del, s {
 	text-decoration: line-through;
-}
-
-h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol, form, .h-captcha {
-	margin-bottom: 1.00rem;
-}
-
-h1:last-child, h2:last-child, h3:last-child, h4:last-child, h5:last-child, h6:last-child, p:last-child, label:last-child,
-legend:last-child, li:last-child, pre:last-child, input:last-child, select:last-child, textarea:last-child, ul:last-child, ol:last-child {
-	margin-bottom: 0;
 }
 
 input, select, textarea {
@@ -189,6 +215,13 @@ h5 {
 	font-size: 1.10rem;
 }
 
+hr {
+	border-width: 0px;
+	border-bottom: 1px;
+	border-style: solid;
+	border-color: silver;
+}
+
 p {
 	line-height: 1.5;
 }
@@ -203,7 +236,11 @@ p {
 	border-radius: 0.50rem;
 }
 
-.card:nth-child(even) {
+.card.full {
+	width: 100%;
+}
+
+.card:not('.full'):nth-child(even) {
 	margin-right: 0;
 	margin-left: 1.00%;
 }
@@ -269,24 +306,26 @@ p {
 	display: inline-block;
 }
 
-#addRecord {
+.addRecord {
 	margin-bottom: 1.00rem;
 	background-color: plum;
 	border-color: thistle;
 }
 
-#addRecord:hover {
+.addRecord:hover {
 	background-color: blueviolet;
 	border-color: plum;
 }
 
-#addRecord:active {
+.addRecord:active {
 	background-color: indigo;
 	border-color: blueviolet;
 }
 
-.addRecord {
+.addRecordField {
+	display: inline-block;
 	margin-bottom: 1.00rem;
+	width: 50%;
 }
 
 #deleteRecord {
@@ -332,5 +371,29 @@ nav a {
 	display: block;
 	border-radius: 0.50rem;
 	text-align: center;
-	text-decoration: none;
+}
+
+.loading:before {
+	content: '';
+	position: relative;
+	top: 0.50rem;
+	left: 0.50rem;
+	display: inline-block;
+	width: 1.50rem;
+	height: 1.50rem;
+	background: linear-gradient(90deg, deepskyblue, dodgerblue);
+	border-radius: 1.50rem;
+	box-shadow: 0 0 0.25rem cyan;
+	cursor: wait;
+	animation: ajaxgif 1s linear infinite;
+}
+
+@keyframes ajaxgif {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
 }

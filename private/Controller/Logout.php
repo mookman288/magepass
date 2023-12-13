@@ -21,9 +21,7 @@
 
 			session_destroy();
 
-			header("Location: " . $app -> getUrl('login'), TRUE, 302);
-
-			exit;
+			return $app -> redirect("login");
 		}
 	}
 ?>

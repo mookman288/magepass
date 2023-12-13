@@ -19,7 +19,7 @@
 				$vaults[] = $row;
 			}
 
-			$app -> view('home', array(
+			return $app -> view('home', array(
 				'vaults' => $vaults
 			));
 		}

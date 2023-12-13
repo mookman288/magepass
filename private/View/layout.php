@@ -29,6 +29,7 @@
 					case 'Home':
 					case 'Vault':
 					case 'VaultCreate':
+					case 'VaultEdit':
 					case 'Archive':
 					case 'ArchiveCreate':
 					case 'Record':

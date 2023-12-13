@@ -40,6 +40,8 @@
 					$this -> config['database']['databaseName']
 				);
 			}
+
+			$this -> includes();
 		}
 
 		public function connect($databaseHost, $databasePort, $databaseUser, $databasePass = null, $databaseName = null) {
@@ -117,7 +119,7 @@
 		}
 
 		public function generateInviteCode($salt) {
-			return hash('crc32b', $salt . date('YmdH'));
+			return hash('crc32b', $salt . date('YmdH')) . hash('adler32', $salt . date('YmdH'));
 		}
 
 		public function getArchive($id) {
@@ -181,9 +183,10 @@
 		}
 
 		public function getUrl($relative = null) {
+			$route = sprintf("%s/", rtrim($this -> route, '/'));
 			$url = '';
 
-			for ($i = 1; $i < substr_count($this -> route, '/'); $i++) {
+			for ($i = 1; $i < substr_count($route, '/'); $i++) {
 				$url .= "../";
 			}
 
@@ -248,6 +251,23 @@
 			return password_verify($value, $hash);
 		}
 
+		public function includes() {
+			$includes = array(
+				'Library',
+				'Controller'
+			);
+
+			$files = array();
+
+			foreach($includes as $include) {
+				$files = array_merge($files, glob("{$this -> path("private/$include/")}*.php"));
+			}
+
+			foreach($files as $file) {
+				require_once($file);
+			}
+		}
+
 		public function json($data, $status = 'OK') {
 			header('Content-Type: application/json');
 
@@ -288,6 +308,14 @@
 				$this -> title = $title ?? null;
 				$this -> description = $description ?? null;
 			}
+		}
+
+		public function redirect($route = "home") {
+			session_write_close();
+
+			header("Location: " . $this -> getUrl("home"));
+
+			exit;
 		}
 
 		private function session() {

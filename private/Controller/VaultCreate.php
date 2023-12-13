@@ -36,7 +36,7 @@
 
 				$statement -> execute();
 
-				header("Location: " . $app -> getUrl("home"), TRUE, 302);
+				return $app -> redirect("home");
 			} catch(\ErrorException $e) {
 				$_SESSION['error'][] = $e -> getMessage();
 			}

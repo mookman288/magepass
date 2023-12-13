@@ -42,7 +42,7 @@
 				$_SESSION['error'][] = $e -> getMessage();
 			}
 
-			$app -> view('login', array(
+			return $app -> view('login', array(
 				'username' => $username
 			));
 		}

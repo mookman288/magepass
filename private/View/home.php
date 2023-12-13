@@ -35,7 +35,7 @@
 </p>
 <p>
 	Each vault is password protected. Try to use a memorable vault password, because if you lose your vault password,
-	you'll lose access to your data inside. 
+	you'll lose access to your data inside.
 </p>
 <h3>What are Archives?</h3>
 <p>
@@ -46,5 +46,6 @@
 </p>
 <h3>Can other people use this with me?</h3>
 <p>
-	Yes! You can register multiple accounts using the registration invite code at the bottom of the main menu.
+	Yes! You can register multiple accounts using the registration invite code at the bottom of the main menu. Registration
+	invite codes are extremely time limited, so you need to create a new account immediately after copying the code.
 </p>

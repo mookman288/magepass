@@ -109,7 +109,7 @@
 				$_SESSION['error'][] = $e -> getMessage();
 			}
 
-			$app -> view('install', array(
+			return $app -> view('install', array(
 				'databaseHost' => $databaseHost,
 				'databasePort' => $databasePort,
 				'databaseName' => $databaseName,

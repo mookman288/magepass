@@ -17,7 +17,12 @@
 					'/' => 'Home',
 					'/home' => 'Home',
 					'/vault/create' => 'VaultCreate',
-					'/vault/(.*)' => 'Vault'
+					'/vault/(.+)/archive/(.+)/record/(.+)' => 'Record',
+					'/vault/(.+)/archive/(.+)/record' => 'RecordCreate',
+					'/vault/(.+)/archive/(.+)' => 'Archive',
+					'/vault/(.+)/archive' => 'ArchiveCreate',
+					'/vault/(.+)/edit' => 'VaultEdit',
+					'/vault/(.+)' => 'Vault'
 				)
 			);
 		} else {
@@ -28,39 +33,35 @@
 			);
 		}
 
+
 		ob_start();
 
 		foreach($routes as $type => $set) {
 			foreach($set as $pattern => $controller) {
-				preg_match(sprintf("/^%s$/", preg_quote($pattern, '/')), $app -> uri, $results);
+				//Not using preg_quote because it kills wildcards.
+				preg_match(sprintf("/^%s$/", str_replace('/', '\/', $pattern)), $app -> uri, $results);
 
 				if (!empty($results)) {
 					$app -> route = $pattern;
 					$app -> routeName = $controller;
-					$controllerPath = $app -> path("private/Controller/{$controller}.php");
+					$controller = sprintf("MagePass\Controller\%s", $controller);
 
-					if (file_exists($controllerPath)) {
-						require_once($controllerPath);
+					if (class_exists($controller)) {
+						$parameters = $results;
 
-						$controller = sprintf("MagePass\Controller\%s", $controller);
+						if ($type == 'protected') {
+							if (empty($app -> user) || empty($app -> userKey)) {
+								$_SESSION['redirect'] = $app -> uri;
 
-						if (class_exists($controller)) {
-							$parameters = $results;
+								header("Location: " . $app -> getUrl('login'), TRUE, 302);
 
-							if ($type == 'protected') {
-								if (empty($app -> user) || empty($app -> userKey)) {
-									$_SESSION['redirect'] = $app -> uri;
-
-									header("Location: " . $app -> getUrl('login'), TRUE, 302);
-
-									exit;
-								}
+								exit;
 							}
-
-							$parameters[0] = $app;
-
-							call_user_func_array(array((new $controller), strtolower($app -> method)), $parameters);
 						}
+
+						$parameters[0] = $app;
+
+						call_user_func_array(array((new $controller), strtolower($app -> method)), $parameters);
 					}
 
 					break;
@@ -76,9 +77,9 @@
 			print($render);
 		}
 	} catch(\PDOException | \ErrorException $e) {
-		error_log(sprintf("[%s] %s", $app -> code, $e -> getMessage()));
+		error_log(sprintf("[%s] %s", $app -> code ?? '?', $e -> getMessage()));
 
-		http_response_code($app -> code);
+		http_response_code($app -> code ?? '500');
 	}
 
 	$_SESSION['error'] = null;

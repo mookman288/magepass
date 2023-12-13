@@ -15,6 +15,10 @@
 	<input id="password" name="password" type="password" size="40" />
 	<label for="confirm">Confirm Password</label>
 	<input id="confirm" name="confirm" type="password" size="40" />
+	<p>
+		Note: you cannot change your password if you've forgotten it. Your password is used to encrypt your information.
+		Try to select something memorable, but difficult to guess or brute-force.
+	</p>
 <?php if (!empty($app -> config['captcha']['hcaptchaSiteKey'])) { ?>
 	<div class="h-captcha" data-sitekey="<?php print($app -> config['captcha']['hcaptchaSiteKey']); ?>"></div>
 	<script src='https://js.hcaptcha.com/1/api.js' async defer></script>

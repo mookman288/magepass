@@ -42,7 +42,7 @@ var triggerAddRecordButtonListener = function() {
 			var inputContent = document.createElement('textarea');
 			inputContent.setAttribute('id', 'addRecordContent' + index)
 			inputContent.setAttribute('name', 'addRecordContent[' + index + ']');
-			inputContent.setAttribute('rows', 5);
+			inputContent.setAttribute('rows', 4);
 			inputContent.setAttribute('cols', 42);
 
 			div.appendChild(inputContent);
@@ -55,7 +55,7 @@ var triggerAddRecordButtonListener = function() {
 var archives = document.getElementsByClassName('archive');
 
 if (archives.length > 0) {
-	for(i = 0; i < archives.length; i++) {
+	for (i = 0; i < archives.length; i++) {
 		var archive = archives[i];
 		var endpoint = archive.dataset.endpoint;
 		var header = archive.getElementsByTagName('h3')[0];
@@ -74,8 +74,6 @@ if (archives.length > 0) {
 					} else {
 						response = JSON.parse(request.responseText);
 
-	console.log(response);
-
 						if (!response.data) {
 							if (confirm("There was an error retrieving the archive data. Refresh the page to try again?")) {
 								location.reload(true);
@@ -93,6 +91,30 @@ if (archives.length > 0) {
 
 			request.open('GET', endpoint);
 			request.send();
+		});
+	}
+}
+
+var forms = document.getElementsByTagName('form');
+
+if (forms.length > 0) {
+	for (i = 0; i < forms.length; i++) {
+		var form = forms[i];
+
+		form.addEventListener('submit', function(e) {
+			console.log(form.querySelectorAll('input[type=submit]'), form.querySelectorAll('input[type=submit]')[0]);
+			e.preventDefault();
+			return false;
+			var button = form.querySelectorAll('input[type=submit]')[0];
+			var loading = document.createElement('span');
+
+			button.setAttribute('disabled', 'disabled');
+
+			loading.classList.add('loading');
+
+			form.appendChild(loading);
+
+			return true;
 		});
 	}
 }
