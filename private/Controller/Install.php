@@ -83,7 +83,6 @@
 					'app' => array(
 						'name' => $appName,
 						'dev' => false,
-						'inviteCode' => $app -> generateInviteCode($salt),
 						'sessionLength' => $sessionLength,
 						'cipher' => $cipher,
 						'salt' => bin2hex($salt),

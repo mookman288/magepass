@@ -5,6 +5,7 @@ CREATE TABLE `vault` (
 	`user_id` BIGINT UNSIGNED NOT NULL,
 	`name` MEDIUMBLOB NOT NULL,
 	`password` VARCHAR(255) NOT NULL,
+	`shared` BOOLEAN DEFAULT 0,
 	PRIMARY KEY (`id`),
 	INDEX `user_id_index` (`user_id`),
 	FOREIGN KEY (`user_id`) REFERENCES user(`id`) ON DELETE CASCADE

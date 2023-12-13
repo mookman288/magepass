@@ -5,11 +5,11 @@
 
 	class Vault {
 		public function get(App $app, $id) {
-			$vaultKey = $app -> decrypt($_SESSION['vaultKey']);
+			$vault = $app -> getVault($id);
+
+			$vaultKey = $app -> decrypt($_SESSION[$vault -> sessionID]);
 
 			if (!empty($vaultKey)) {
-				$vault = $app -> getVault($id);
-
 				$archives = $app -> getArchives($vault -> id);
 
 				return $app -> view('vault', array(
@@ -38,7 +38,7 @@
 
 				$vaultKey = $app -> getKey($password, $app -> user -> salt);
 
-				$_SESSION['vaultKey'] = $app -> encrypt($vaultKey);
+				$_SESSION[$vault -> sessionID] = $app -> encrypt($vaultKey);
 			} catch(\ErrorException $e) {
 				$_SESSION['error'][] = $e -> getMessage();
 			}

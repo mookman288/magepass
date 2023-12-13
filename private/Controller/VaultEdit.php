@@ -9,6 +9,12 @@
 			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
 			$confirm = filter_input(INPUT_POST, 'confirm', FILTER_SANITIZE_STRING);
 
+			$vault = $app -> getVault($id);
+
+			if (!isset($_SESSION[$vault -> sessionID])) {
+				throw new \ErrorException("Your session has expired. Please login again.");
+			}
+
 			try {
 				if (!$name) {
 					throw new \ErrorException("You must choose a name for this vault.");

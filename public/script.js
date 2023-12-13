@@ -51,7 +51,7 @@ var triggerAddRecordButtonListener = function() {
 		}, false);
 	}
 }();
-
+/*
 var archives = document.getElementsByClassName('archive');
 
 if (archives.length > 0) {
@@ -94,7 +94,7 @@ if (archives.length > 0) {
 		});
 	}
 }
-
+*/
 var forms = document.getElementsByTagName('form');
 
 if (forms.length > 0) {
@@ -102,17 +102,14 @@ if (forms.length > 0) {
 		var form = forms[i];
 
 		form.addEventListener('submit', function(e) {
-			console.log(form.querySelectorAll('input[type=submit]'), form.querySelectorAll('input[type=submit]')[0]);
-			e.preventDefault();
-			return false;
-			var button = form.querySelectorAll('input[type=submit]')[0];
+			var button = this.querySelectorAll('input[type=submit]')[0];
 			var loading = document.createElement('span');
 
 			button.setAttribute('disabled', 'disabled');
 
 			loading.classList.add('loading');
 
-			form.appendChild(loading);
+			this.appendChild(loading);
 
 			return true;
 		});

@@ -117,6 +117,7 @@ del, s {
 input, select, textarea {
 	display: block;
 	padding: 0.50rem;
+	max-width: 100%;
 	border-width: 1px;
 	border-style: solid;
 	border-color: silver;
@@ -128,7 +129,6 @@ input, select, textarea {
 
 input, select {
 	vertical-align: middle;
-	max-width: 100%;
 }
 
 ins {
@@ -228,7 +228,7 @@ p {
 
 .card {
 	display: inline-block;
-	width: 48.50%;
+	width: calc(50.00% - 1.00rem);
 	margin-right: 1.00%;
 	margin-bottom: 1.00rem;
 	padding: 1.00rem;
@@ -325,7 +325,8 @@ p {
 .addRecordField {
 	display: inline-block;
 	margin-bottom: 1.00rem;
-	width: 50%;
+	width: calc(33.00% - 0.50rem);
+	padding: 0.50rem;
 }
 
 #deleteRecord {

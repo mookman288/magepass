@@ -119,7 +119,7 @@
 		}
 
 		public function generateInviteCode($salt) {
-			return hash('crc32b', $salt . date('YmdH')) . hash('adler32', $salt . date('YmdH'));
+			return substr(hash('sha512', $salt . date('YmdH')), date('d'), 16);
 		}
 
 		public function getArchive($id) {
@@ -234,6 +234,8 @@
 
 					$vault -> name = $this -> decrypt($vault -> name, $this -> userKey);
 
+					$vault -> sessionID = sprintf('vaultKey_%s', $vault -> id);
+
 					break;
 				}
 			} catch(\ErrorException $e) {
@@ -313,7 +315,7 @@
 		public function redirect($route = "home") {
 			session_write_close();
 
-			header("Location: " . $this -> getUrl("home"));
+			header("Location: " . $this -> getUrl($route));
 
 			exit;
 		}

@@ -11,9 +11,10 @@
 		public function post(App $app, $vaultId) {
 			$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
 
-			$vaultKey = $app -> decrypt($_SESSION['vaultKey']);
-
 			$vault = $app -> getVault($vaultId);
+
+			$vaultKey = $app -> decrypt($_SESSION[$vault -> sessionID]);
+
 			try {
 				if (empty($vault)) {
 					throw new \ErrorException("You must select a vault you control.");
