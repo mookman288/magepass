@@ -43,4 +43,4 @@ composer.phar
 node_modules/
 
 # PHP
-private/cache
+private/Session/**/*

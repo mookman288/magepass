@@ -30,6 +30,9 @@
 							$_SESSION['key'] = $app -> encrypt($app -> getKey($password, $user -> salt));
 							$_SESSION['user'] = $app -> encrypt($user);
 
+							//Regenerate the session ID.
+							session_regenerate_id(true);
+
 							header("Location: " . $app -> getUrl('home'), TRUE, 302);
 						}
 					}

@@ -7,11 +7,18 @@
 <?php foreach($vaults as $id => $vault) { ?>
 	<div class="card">
 		<h3><?php print($vault -> name); ?></h3>
+	<?php if (!empty($app -> getVaultKey($vault -> id))) { ?>
+		<p>This vault is currently unlocked.</p>
+		<a href="<?php $app -> url("vault/{$vault -> id}"); ?>" class="button">
+			View Vault
+		</a>
+	<?php } else { ?>
 		<form action="<?php $app -> url("vault/{$vault -> id}"); ?>" method="post">
 			<label for="password-<?php print($id); ?>">Password</label>
 			<input id="password-<?php print($id); ?>" name="password" type="password" />
 			<input type="submit" value="Unlock" />
 		</form>
+	<?php } ?>
 	</div>
 <?php } ?>
 <?php } else { ?>

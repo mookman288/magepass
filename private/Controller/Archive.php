@@ -13,13 +13,13 @@
 		public function post(App $app, $vaultId, $id) {
 			$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
 
-			$vault = $app -> getVault($vaultId);
+			$vaultKey = $app -> getVaultKey($vaultId);
 
-			if (!isset($_SESSION[$vault -> sessionID])) {
+			if (empty($vaultKey)) {
 				throw new \ErrorException("Your session has expired. Please login again.");
 			}
 
-			$vaultKey = $app -> decrypt($_SESSION[$vault -> sessionID]);
+			$vaultKey = $app -> decrypt($vaultKey);
 
 			try {
 				if (!$name) {
@@ -35,7 +35,7 @@
 
 				$statement -> execute();
 			} catch(\ErrorException $e) {
-				$_SESSION['error'][] = $e -> getMessage();
+				$_SESSION['flash']['error'][] = $e -> getMessage();
 			}
 
 			return $app -> redirect("vault/$vaultId");

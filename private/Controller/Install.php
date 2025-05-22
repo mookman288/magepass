@@ -20,6 +20,7 @@
 		}
 
 		public function post(App $app) {
+			$sessionPath = false;
 			$appName = filter_input(INPUT_POST, 'appName', FILTER_SANITIZE_STRING);
 			$databaseHost = filter_input(INPUT_POST, 'databaseHost', FILTER_SANITIZE_STRING);
 			$databasePort = filter_input(INPUT_POST, 'databasePort', FILTER_SANITIZE_STRING);
@@ -43,7 +44,6 @@
 					$databasePort = 3306;
 				}
 
-
 				if ($databaseName == $_SESSION['databaseNameExample']) {
 					$app -> connect($databaseHost, $databasePort, $databaseUser, $databasePass, '');
 
@@ -56,6 +56,26 @@
 					));
 
 					$app -> db -> query("FLUSH PRIVILEGES");
+				}
+
+				if (function_exists('posix_geteuid') && function_exists('posix_getpwuid')) {
+					$whoami = posix_getpwuid(posix_geteuid())['name'] ?? null;
+				}
+
+				if (empty($whoami)) {
+					if (function_exists('shell_exec') && is_callable('shell_exec')) {
+						$whoami = trim(shell_exec('whoami'));
+					} elseif (function_exists('exec') && is_callable('exec')) {
+						$whoami = exec('whoami');
+					}
+				}
+
+				if (!empty($whoami)) {
+					if (@mkdir($app -> sessionPath, 2700)) {
+						if (@chown($app -> sessionPath, $whoami)) {
+							$sessionPath = true;
+						}
+					}
 				}
 
 				$app -> connect($databaseHost, $databasePort, $databaseUser, $databasePass, $databaseName);
@@ -84,6 +104,7 @@
 						'name' => $appName,
 						'dev' => false,
 						'sessionLength' => $sessionLength,
+						'sessionPath' => $sessionPath,
 						'cipher' => $cipher,
 						'salt' => bin2hex($salt),
 						'key' => bin2hex($key)
@@ -104,8 +125,8 @@
 				$_SESSION['success'][] = "The application has been successfully installed.";
 
 				header("Location: {$app -> uri}", TRUE, 301);
-			} catch (\PDOException $e) {
-				$_SESSION['error'][] = $e -> getMessage();
+			} catch (\Throwable $e) {
+				$_SESSION['flash']['error'][] = $e -> getMessage();
 			}
 
 			return $app -> view('install', array(

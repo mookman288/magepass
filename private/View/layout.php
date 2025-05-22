@@ -52,34 +52,15 @@
 				</nav>
 			</aside>
 			<section>
-			<?php if (!empty($_SESSION['error'])) { ?>
-				<div class="alert error">
-				<?php foreach($_SESSION['error'] as $error) { ?>
-					<p><?php print($error); ?></p>
+		<?php foreach($app -> messageKeys as $_messageKey) { ?>
+			<?php if (!empty($_SESSION[$_messageKey])) { ?>
+				<div class="alert <?php print($_messageKey); ?>">
+				<?php foreach($_SESSION[$_messageKey] as $_message) { ?>
+					<p><?php print($_message); ?></p>
 				<?php } ?>
 				</div>
 			<?php } ?>
-			<?php if (!empty($_SESSION['message'])) { ?>
-				<div class="alert message">
-				<?php foreach($_SESSION['message'] as $message) { ?>
-					<p><?php print($message); ?></p>
-				<?php } ?>
-				</div>
-			<?php } ?>
-			<?php if (!empty($_SESSION['success'])) { ?>
-				<div class="alert success">
-				<?php foreach($_SESSION['success'] as $success) { ?>
-					<p><?php print($success); ?></p>
-				<?php } ?>
-				</div>
-			<?php } ?>
-			<?php if (!empty($_SESSION['success'])) { ?>
-				<div class="alert success">
-				<?php foreach($_SESSION['success'] as $success) { ?>
-					<p><?php print($success); ?></p>
-				<?php } ?>
-				</div>
-			<?php } ?>
+		<?php } ?>
 				<?php print($app -> body ?? null); ?>
 			</section>
 		</main>

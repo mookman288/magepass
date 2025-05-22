@@ -2,22 +2,35 @@
 	namespace MagePass;
 
 	class App {
-		public $root;
 		public $code;
 		public $config;
 		public $db;
 		public $description;
+		public $messageKeys;
 		public $method;
 		public $request;
+		public $root;
 		public $route;
 		public $routeName;
-		public $title;
 		public $uri;
+		public $title;
 		public $user;
 		public $userKey;
 
+		protected $configPath;
+		protected $sessionPath;
+
 		public function __construct() {
 			$this -> root = realpath(sprintf("%s/../", __DIR__));
+			$this -> configPath = $this -> path('private/config.ini');
+			$this -> sessionPath = $this -> path('private/Session');
+			$this -> messageKeys = array(
+				'error',
+				'message',
+				'success',
+				'warning'
+			);
+
 			$this -> config = $this -> getConfig();
 			$this -> method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_METHOD', FILTER_SANITIZE_URL);
 			$this -> request = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL) ?? filter_input(INPUT_ENV, 'REQUEST_URI', FILTER_SANITIZE_URL);
@@ -44,7 +57,24 @@
 			$this -> includes();
 		}
 
-		public function connect($databaseHost, $databasePort, $databaseUser, $databasePass = null, $databaseName = null) {
+		protected function cleanup() {
+			if (!empty($this -> config['app']['sessionPath'])) {
+				foreach(scandir($this -> sessionPath) as $file) {
+					//If this is not a dotfile.
+					if (substr($file, 0, 1) !== '.') {
+						$filePath = "{$this -> sessionPath}/$file";
+
+						if (is_file($filePath) && is_writable($filePath)) {
+							if ((filemtime($filePath) + $this -> config['app']['sessionLength']) < time()) {
+								unlink($filePath);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		protected function connect($databaseHost, $databasePort, $databaseUser, $databasePass = null, $databaseName = null) {
 			$databaseHost = (!empty($databaseHost)) ? $databaseHost : 'localhost';
 			$databasePort = (!empty($databasePort)) ? $databasePort : 3306;
 
@@ -118,12 +148,12 @@
 			throw new \ErrorException($message);
 		}
 
-		public function generateInviteCode($salt) {
+		protected function generateInviteCode($salt) {
 			return substr(hash('sha512', $salt . date('YmdH')), date('d'), 16);
 		}
 
 		public function getArchive($id) {
-			$vaultKey = $this -> decrypt($_SESSION['vaultKey']);
+			$vaultKey = $this -> decrypt($this -> getVaultKey($id));
 
 			$statement = $this -> db -> prepare("SELECT * FROM archive WHERE id = :id");
 
@@ -133,20 +163,34 @@
 
 			$archive = $statement -> fetchObject();
 
+			$vaultKey = $this -> getVaultKey($archive -> vault_id);
+
+			if (empty($vaultKey)) {
+				throw new \ErrorException("Your session has expired. Please login again.");
+			}
+
+			$vaultKey = $this -> decrypt($vaultKey);
+
 			$archive -> name = $this -> decrypt($archive -> name, $vaultKey);
 			$archive -> content = $this -> getRecords($archive -> id);
 
 			return $archive;
 		}
 
-		public function getArchives($vaultId) {
-			$vaultKey = $this -> decrypt($_SESSION['vaultKey']);
+		public function getArchives($id) {
+			$vaultKey = $this -> getVaultKey($id);
+
+			if (empty($vaultKey)) {
+				throw new \ErrorException("Your session has expired. Please login again.");
+			}
+
+			$vaultKey = $this -> decrypt($vaultKey);
 
 			$archives = array();
 
 			$statement = $this -> db -> prepare("SELECT * FROM archive WHERE vault_id = :vault_id");
 
-			$statement -> bindValue(':vault_id', $vaultId);
+			$statement -> bindValue(':vault_id', $id);
 
 			$statement -> execute();
 
@@ -234,7 +278,7 @@
 
 					$vault -> name = $this -> decrypt($vault -> name, $this -> userKey);
 
-					$vault -> sessionID = sprintf('vaultKey_%s', $vault -> id);
+					$vault -> sessionID = $this -> getVaultSessionId($vault -> id);
 
 					break;
 				}
@@ -245,6 +289,14 @@
 			return $vault;
 		}
 
+		public function getVaultKey($id) {
+			return $_SESSION[$this -> getVaultSessionId($id)] ?? null;
+		}
+
+		protected function getVaultSessionId($id) {
+			return sprintf('vaultKey_%s', $id);
+		}
+
 		public function hash($value) {
 			return password_hash($value, PASSWORD_DEFAULT);
 		}
@@ -253,7 +305,7 @@
 			return password_verify($value, $hash);
 		}
 
-		public function includes() {
+		protected function includes() {
 			$includes = array(
 				'Library',
 				'Controller'
@@ -321,17 +373,45 @@
 		}
 
 		private function session() {
-			if (!empty($this -> config['app']['sessionLength'])) {
-				ini_set('session.gc_maxlifetime', round(60 * $this -> config['app']['sessionLength']));
-				session_set_cookie_params(round(60 * $this -> config['app']['sessionLength']));
+			if (!empty($this -> config['app']['sessionPath'])) {
+				//Set the session path.
+				ini_set('session.save_path', $this -> sessionPath);
 			}
+
+			//Set how long the session length should be.
+			$sessionLength = round(60 * $this -> config['app']['sessionLength']);
+
+			//Make the garbage cleanup probability more aggressive (and decreases performance.)
+			ini_set('session.gc_probability', 1);
+			ini_set('session.gc_divisor', 10);
+
+			//Use strict mode which avoids fixation attacks.
+			ini_set('session.use_strict_mode', 1);
+
+			if (!empty($this -> config['app']['sessionLength'])) {
+				ini_set('session.gc_maxlifetime', $sessionLength);
+				session_set_cookie_params($sessionLength);
+			}
+
+			$this -> cleanup();
 
 			session_start();
 
-			$_SESSION['error'] = array();
-			$_SESSION['success'] = array();
-			$_SESSION['warning'] = array();
-			$_SESSION['message'] = array();
+			$_SESSION['last_activity'] = time();
+
+			$_SESSION['flash'] = $_SESSION['flash'] ?? array();
+
+			foreach($this -> messageKeys as $messageKey) {
+				$_SESSION[$messageKey] = array();
+
+				if (!empty($_SESSION['flash'][$messageKey])) {
+					foreach($_SESSION['flash'][$messageKey] as $message) {
+						$_SESSION[$messageKey][] = $message;
+					}
+				}
+
+				$_SESSION['flash'][$messageKey] = array();
+			}
 
 			if (!empty($_SESSION['key']) && !empty($_SESSION['user'])) {
 				$this -> userKey = $this -> decrypt($_SESSION['key']);
@@ -339,7 +419,7 @@
 			}
 		}
 
-		public function setConfig($config) {
+		protected function setConfig($config) {
 			$ini = array();
 
 			foreach($config as $header => $configSet) {
@@ -352,7 +432,7 @@
 				$ini[] = '';
 			}
 
-			file_put_contents($this -> path('private/config.ini'), implode(PHP_EOL, $ini));
+			file_put_contents($this -> configPath, implode(PHP_EOL, $ini));
 		}
 
 		public function update($force = false) {
