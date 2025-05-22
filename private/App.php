@@ -57,6 +57,17 @@
 			$this -> includes();
 		}
 
+		protected function clean($input) {
+			//Strip the tags.
+			$input = strip_tags($input);
+
+			//Replace all unacceptable characters.
+			$string = preg_replace('/\x00|<[^>]*>?/', '', $input);
+
+			//Return the string.
+			return $input;
+		}
+
 		protected function cleanup() {
 			if (!empty($this -> config['app']['sessionPath'])) {
 				foreach(scandir($this -> sessionPath) as $file) {
@@ -153,8 +164,6 @@
 		}
 
 		public function getArchive($id) {
-			$vaultKey = $this -> decrypt($this -> getVaultKey($id));
-
 			$statement = $this -> db -> prepare("SELECT * FROM archive WHERE id = :id");
 
 			$statement -> bindValue(':id', $id);
@@ -172,7 +181,7 @@
 			$vaultKey = $this -> decrypt($vaultKey);
 
 			$archive -> name = $this -> decrypt($archive -> name, $vaultKey);
-			$archive -> content = $this -> getRecords($archive -> id);
+			$archive -> content = $this -> getRecords($archive -> id, $vaultKey);
 
 			return $archive;
 		}
@@ -196,7 +205,7 @@
 
 			while ($archive = $statement -> fetchObject()) {
 				$archive -> name = $this -> decrypt($archive -> name, $vaultKey);
-				$archive -> content = $this -> getRecords($archive -> id);
+				$archive -> content = $this -> getRecords($archive -> id, $vaultKey);
 
 				$archives[$archive -> id] = $archive;
 			}
@@ -237,9 +246,7 @@
 			return $url . $relative;
 		}
 
-		public function getRecords($archiveId) {
-			$vaultKey = $this -> decrypt($_SESSION['vaultKey']);
-
+		public function getRecords($archiveId, $vaultKey) {
 			$records = array();
 			$recordStatement = $this -> db -> prepare("SELECT * FROM record WHERE archive_id = :archive_id");
 
@@ -322,18 +329,18 @@
 			}
 		}
 
-		public function json($data, $status = 'OK') {
+		public function json($data = null, $status = 'OK') {
 			header('Content-Type: application/json');
 
 			switch($status) {
 				case 'ERROR':
-					http_status_code(500);
+					http_response_code(500);
 				break;
 				case 'FORBIDDEN':
-					http_status_code(403);
+					http_response_code(403);
 				break;
 				case 'USERERROR':
-					http_status_code(400);
+					http_response_code(400);
 				break;
 			}
 
@@ -345,6 +352,40 @@
 
 		public function path($pathFromRoot) {
 			return sprintf("%s/%s", $this -> root, escapeshellcmd($pathFromRoot));
+		}
+
+		protected function input($input, $clean = true, $type = null) {
+			if (!empty($clean)) {
+				if (!defined($clean) || empty($type)) {
+					if (!is_array($input)) {
+						return $this -> clean($input);
+					} else {
+						foreach($input as $key => $value) {
+							$input[$key] = $this -> input($value, $clean, $type);
+						}
+					}
+				} else {
+					return filter_input($type, $input, $clean);
+				}
+			}
+
+			return $input;
+		}
+
+		public function post($field, $clean = true) {
+			if (isset($_POST[$field])) {
+				return $this -> input($_POST[$field], $clean, INPUT_POST);
+			}
+
+			return null;
+		}
+
+		public function query($field, $clean = true) {
+			if (isset($_GET[$field])) {
+				return $this -> input($_GET[$field], $clean, INPUT_GET);
+			}
+
+			return null;
 		}
 
 		public function render($file, $parameters = array()) {

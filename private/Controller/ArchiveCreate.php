@@ -9,16 +9,22 @@
 		}
 
 		public function post(App $app, $vaultId) {
-			$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-
-			$vault = $app -> getVault($vaultId);
-
-			$vaultKey = $app -> decrypt($_SESSION[$vault -> sessionID]);
+			$name = $app -> post('name');
 
 			try {
+				$vault = $app -> getVault($vaultId);
+
 				if (empty($vault)) {
 					throw new \ErrorException("You must select a vault you control.");
 				}
+
+				$vaultKey = $app -> getVaultKey($vaultId);
+
+				if (empty($vaultKey)) {
+					throw new \ErrorException("Your session has expired. Please login again.");
+				}
+
+				$vaultKey = $app -> decrypt($vaultKey);
 
 				if (!$name) {
 					throw new \ErrorException("You must choose a name for this archive.");
@@ -33,7 +39,9 @@
 
 				$statement -> execute();
 
-				header("Location: " . $app -> getUrl("vault/$vaultId"));
+				$_SESSION['flash']['success'][] = "Your archive was created.";
+
+				return $app -> redirect("vault/$vaultId");
 			} catch(\ErrorException $e) {
 				$_SESSION['error'][] = $e -> getMessage();
 			}

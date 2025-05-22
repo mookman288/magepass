@@ -1,3 +1,5 @@
+var endpoint = document.getElementsByTagName('html')[0].dataset.api.trim('/');
+
 var triggerAddRecordButtonListener = function() {
 	var addRecordButtons = document.getElementsByClassName('addRecord');
 
@@ -15,7 +17,7 @@ var triggerAddRecordButtonListener = function() {
 			}
 
 			var div = document.createElement('div');
-			div.className = "addRecordField";
+			div.className = "recordField addRecordField";
 
 			var labelName = document.createElement('label');
 			var labelNameContent = document.createTextNode('Record Name #' + (index + 1));
@@ -51,50 +53,7 @@ var triggerAddRecordButtonListener = function() {
 		}, false);
 	}
 }();
-/*
-var archives = document.getElementsByClassName('archive');
 
-if (archives.length > 0) {
-	for (i = 0; i < archives.length; i++) {
-		var archive = archives[i];
-		var endpoint = archive.dataset.endpoint;
-		var header = archive.getElementsByTagName('h3')[0];
-
-		header.addEventListener('click', function(e) {
-			e.preventDefault();
-
-			var request = new XMLHttpRequest();
-
-			request.onreadystatechange = function() {
-				if (request.readyState === XMLHttpRequest.DONE) {
-					if (request.status !== 200) {
-						if (confirm("There was an error communicating with the application. Refresh the page to try again?")) {
-							location.reload(true);
-						}
-					} else {
-						response = JSON.parse(request.responseText);
-
-						if (!response.data) {
-							if (confirm("There was an error retrieving the archive data. Refresh the page to try again?")) {
-								location.reload(true);
-							}
-						} else {
-							document.getElementById('archive').remove();
-
-							var div = document.createElement('div');
-							div.id = "archive";
-						}
-
-					}
-				}
-			};
-
-			request.open('GET', endpoint);
-			request.send();
-		});
-	}
-}
-*/
 var forms = document.getElementsByTagName('form');
 
 if (forms.length > 0) {
@@ -115,3 +74,41 @@ if (forms.length > 0) {
 		});
 	}
 }
+
+var heartbeat = setInterval(function() {
+	var request = new XMLHttpRequest();
+	var refresh = false;
+
+	request.onreadystatechange = function() {
+		if (request.readyState === XMLHttpRequest.DONE) {
+			response = JSON.parse(request.responseText);
+
+			if (request.status !== 200 || !response.status || response.status != 'OK') {
+				refresh = true;
+			}
+
+			if (refresh) {
+				if (!response.data || !response.data.message) {
+					var message = "Your session has expired. Please log back in to continue.";
+				} else {
+					var message = response.data.message;
+				}
+
+				if (!response.data || !response.data.redirect) {
+					var redirect = location.href;
+				} else {
+					var redirect = response.data.redirect;
+				}
+
+				if (confirm(message)) {
+					clearInterval(heartbeat);
+
+					location.href = redirect;
+				}
+			}
+		}
+	};
+
+	request.open('GET', endpoint + 'ping');
+	request.send();
+}, 10000);

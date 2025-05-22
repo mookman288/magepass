@@ -23,7 +23,7 @@
 		}
 
 		public function post(App $app, $id) {
-			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+			$password = $app -> post('password');
 
 			try {
 				if (!$password) {
@@ -47,9 +47,9 @@
 		}
 
 		public function edit(App $app, $id) {
-			$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-			$confirm = filter_input(INPUT_POST, 'confirm', FILTER_SANITIZE_STRING);
+			$name = $app -> post('name');
+			$password = $app -> post('password');
+			$confirm = $app -> post('confirm');
 
 			try {
 				if (!$name) {
@@ -62,7 +62,7 @@
 					}
 
 					$statement = $app -> db -> prepare(
-						"UPDATE vault SET name = :name, password = :password WHERE id = :id"
+						"UPDATE vault SET name = :name, password = :password, updated_at = NOW() WHERE id = :id"
 					);
 
 					$statement -> bindValue(':name',  $app -> encrypt($name, $app -> userKey));
@@ -74,12 +74,14 @@
 				}
 
 				$statement = $app -> db -> prepare(
-					"UPDATE vault SET name = :name WHERE id = :id"
+					"UPDATE vault SET name = :name, updated_at = NOW() WHERE id = :id"
 				);
 
 				$statement -> bindValue(':name',  $app -> encrypt($name, $app -> userKey));
 
 				$statement -> execute();
+
+				$_SESSION['flash']['success'][] = "Your vault was updated.";
 			} catch(\ErrorException $e) {
 				$_SESSION['error'][] = $e -> getMessage();
 			}

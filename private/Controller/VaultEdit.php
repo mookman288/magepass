@@ -5,9 +5,9 @@
 
 	class VaultEdit {
 		public function post(App $app, $id) {
-			$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-			$confirm = filter_input(INPUT_POST, 'confirm', FILTER_SANITIZE_STRING);
+			$name = filter_input(INPUT_POST, 'name');
+			$password = filter_input(INPUT_POST, 'password');
+			$confirm = filter_input(INPUT_POST, 'confirm');
 
 			$vault = $app -> getVault($id);
 
@@ -21,7 +21,7 @@
 				}
 
 				$statement = $app -> db -> prepare(
-					"UPDATE vault SET name = :name WHERE id = :id"
+					"UPDATE vault SET name = :name, updated_at = NOW() WHERE id = :id"
 				);
 
 				$statement -> bindValue(':name',  $app -> encrypt($name, $app -> userKey));

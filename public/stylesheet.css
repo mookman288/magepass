@@ -39,7 +39,6 @@ legend:last-child, li:last-child, pre:last-child, input:last-child, select:last-
 	margin-bottom: 0;
 }
 
-
 a {
 	margin: 0;
 	padding: 0;
@@ -129,6 +128,11 @@ input, select, textarea {
 
 input, select {
 	vertical-align: middle;
+}
+
+input[type=checkbox], input[type=radio] {
+	display: inline-block;
+	vertical-align: baseline;
 }
 
 ins {
@@ -322,7 +326,7 @@ p {
 	border-color: blueviolet;
 }
 
-.addRecordField {
+.recordField {
 	display: inline-block;
 	margin-bottom: 1.00rem;
 	width: calc(33.00% - 0.50rem);

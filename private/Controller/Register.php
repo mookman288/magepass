@@ -9,12 +9,12 @@
 		}
 
 		public function post(App $app) {
-			$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-			$confirm = filter_input(INPUT_POST, 'confirm', FILTER_SANITIZE_STRING);
-			$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_URL);
-			$inviteCode = filter_input(INPUT_POST, 'inviteCode', FILTER_SANITIZE_STRING);
-			$captcha = filter_input(INPUT_POST, 'h-captcha-response', FILTER_SANITIZE_STRING);
+			$username = $app -> post('username');
+			$password = $app -> post('password');
+			$confirm = $app -> post('confirm');
+			$email = $app -> post('email', FILTER_SANITIZE_URL);
+			$inviteCode = $app -> post('inviteCode');
+			$captcha = $app -> post('h-captcha-response');
 
 			try {
 				if ($app -> db -> query('SELECT COUNT(*) FROM user') -> fetchColumn()) {

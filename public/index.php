@@ -11,7 +11,8 @@
 				'unprotected' => array(
 					'/register' => 'Register',
 					'/login' => 'Login',
-					'/logout' => 'Logout'
+					'/logout' => 'Logout',
+					'/ping' => 'Ping'
 				),
 				'protected' => array(
 					'/' => 'Home',
@@ -32,7 +33,6 @@
 				)
 			);
 		}
-
 
 		ob_start();
 

@@ -21,15 +21,15 @@
 
 		public function post(App $app) {
 			$sessionPath = false;
-			$appName = filter_input(INPUT_POST, 'appName', FILTER_SANITIZE_STRING);
-			$databaseHost = filter_input(INPUT_POST, 'databaseHost', FILTER_SANITIZE_STRING);
-			$databasePort = filter_input(INPUT_POST, 'databasePort', FILTER_SANITIZE_STRING);
-			$databaseName = filter_input(INPUT_POST, 'databaseName', FILTER_SANITIZE_STRING);
-			$databaseUser = filter_input(INPUT_POST, 'databaseUser', FILTER_SANITIZE_STRING);
-			$databasePass = filter_input(INPUT_POST, 'databasePass', FILTER_SANITIZE_STRING);
-			$sessionLength = filter_input(INPUT_POST, 'sessionLength', FILTER_SANITIZE_NUMBER_FLOAT);
-			$hcaptchaSiteKey = filter_input(INPUT_POST, 'hcaptchaSiteKey', FILTER_SANITIZE_STRING);
-			$hcaptchaSecretKey = filter_input(INPUT_POST, 'hcaptchaSecretKey', FILTER_SANITIZE_STRING);
+			$appName = $app -> post('appName');
+			$databaseHost = $app -> post('databaseHost');
+			$databasePort = $app -> post('databasePort');
+			$databaseName = $app -> post('databaseName');
+			$databaseUser = $app -> post('databaseUser');
+			$databasePass = $app -> post('databasePass');
+			$sessionLength = $app -> post('sessionLength', FILTER_SANITIZE_NUMBER_FLOAT);
+			$hcaptchaSiteKey = $app -> post('hcaptchaSiteKey');
+			$hcaptchaSecretKey = $app -> post('hcaptchaSecretKey');
 
 			try {
 				if (empty($appName)) {

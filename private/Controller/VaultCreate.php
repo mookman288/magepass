@@ -9,9 +9,9 @@
 		}
 
 		public function post(App $app) {
-			$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-			$confirm = filter_input(INPUT_POST, 'confirm', FILTER_SANITIZE_STRING);
+			$name = $app -> post('name');
+			$password = $app -> post('password');
+			$confirm = $app -> post('confirm');
 
 			try {
 				if (!$name) {
@@ -35,6 +35,8 @@
 				$statement -> bindValue(':password', $app -> hash($password));
 
 				$statement -> execute();
+
+				$_SESSION['flash']['success'][] = "Your vault was created.";
 
 				return $app -> redirect("home");
 			} catch(\ErrorException $e) {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-api="<?php $app -> url(); ?>">
 	<head>
 		<title><?php print($app -> title ?? null); ?> | <?php print($app -> config['app']['name']); ?></title>
 		<link rel="icon" href="<?php $app -> url('favicon.ico'); ?>" />

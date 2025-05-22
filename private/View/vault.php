@@ -42,7 +42,7 @@
 ?>
 		<form action="<?php
 			$app -> url("vault/{$vault -> id}/archive/{$archive -> id}/record/{$record -> id}");
-		?>" method="post">
+		?>" method="post" class="recordField">
 			<label for="nameRecord<?php print($record -> id); ?>">Name</label>
 			<input id="nameRecord<?php print($record -> id); ?>" name="name" type="text" size="40"
 				value="<?php print($record -> name); ?>" />
@@ -56,9 +56,11 @@
 			</label>
 			<input type="submit" value="Save Record" />
 		</form>
-		<hr />
 <?php
 					}
+?>
+		<hr />
+<?php
 				}
 ?>
 		<form action="<?php $app -> url("vault/{$vault -> id}/archive/{$archive -> id}/record"); ?>" method="post">

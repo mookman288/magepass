@@ -9,9 +9,9 @@
 		}
 
 		public function post(App $app) {
-			$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-			$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-			$captcha = filter_input(INPUT_POST, 'h-captcha-response', FILTER_SANITIZE_STRING);
+			$username = $app -> post('username');
+			$password = $app -> post('password');
+			$captcha = $app -> post('h-captcha-response');
 
 			try {
 				if (!empty($app -> config['captcha']['hcaptchaSiteKey']) && !empty($app -> config['captcha']['hcaptchaSecretKey'])) {

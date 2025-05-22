@@ -43,18 +43,26 @@ location / {
 	<input id="databaseUser" name="databaseUser" type="text" size="40" value="<?php print($databaseUser ?? null); ?>" />
 	<label for="databasePass">Database Password</label>
 	<input id="databasePass" name="databasePass" type="text" size="40" value="<?php print($databasePass ?? null); ?>" />
-	<label for="sessionLength">Session Length (After Inactivity)</label>
+	<label for="sessionLength">Session Length</label>
 	<select id="sessionLength" name="sessionLength">
+		<option value="0">Server Default Setting</option>
 		<option value="5"<?php if (($sessionLength ?? null) == 5) { ?> selected="selected"<?php } ?>>
 			5 Minutes
-		</option>
-		<option value="10"<?php if (($sessionLength ?? null) == 10) { ?> selected="selected"<?php } ?>>
-			10 Minutes
 		</option>
 		<option value="15"<?php if (($sessionLength ?? null) == 15) { ?> selected="selected"<?php } ?>>
 			15 Minutes
 		</option>
-		<option value="0">Server Default Setting</option>
+		<option value="30"<?php if (($sessionLength ?? null) == 30) { ?> selected="selected"<?php } ?>>
+			30 Minutes
+		</option>
+		<option value="45"<?php if (($sessionLength ?? null) == 45) { ?> selected="selected"<?php } ?>>
+			45 Minutes
+		</option>
+	<?php for ($i = 1; $i <= 8; $i++) { ?>
+		<option value="<?php print($i * 60); ?>"<?php if (($sessionLength ?? null) == ($i * 60)) { ?> selected="selected"<?php } ?>>
+			<?php print($i); ?> Hours
+		</option>
+	<?php } ?>
 	</select>
 	<label for="hcaptchaSiteKey">HCaptcha Site Key (leave this blank to disable CAPTCHA)</label>
 	<input id="hcaptchaSiteKey" name="hcaptchaSiteKey" type="text" size="40" value="<?php print($hcaptchaSiteKey ?? null); ?>" />
