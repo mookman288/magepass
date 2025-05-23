@@ -73,7 +73,6 @@
 				}
 			}
 
-
 			return $app -> redirect("vault/$vaultId");
 		}
 	}

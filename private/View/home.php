@@ -78,6 +78,7 @@
 	The application, on installation, generates a 2048-byte application key and 384-byte salt using a cryptographically secure
 	random byte function.
 	Key hashes are one-way hashed using Argon2.
+	With Argon2, salts are limited in size per libsodium.
 	If that is unavailable, they are hashed using PBKDF2-SHA512 with at least 100,000 iterations.
 </p>
 <p>

@@ -27,7 +27,7 @@
 			$databaseName = $app -> post('databaseName');
 			$databaseUser = $app -> post('databaseUser');
 			$databasePass = $app -> post('databasePass');
-			$sessionLength = $app -> post('sessionLength', FILTER_SANITIZE_NUMBER_FLOAT);
+			$sessionLength = $app -> post('sessionLength', FILTER_SANITIZE_NUMBER_INT);
 			$hcaptchaSiteKey = $app -> post('hcaptchaSiteKey');
 			$hcaptchaSecretKey = $app -> post('hcaptchaSecretKey');
 
@@ -103,7 +103,7 @@
 					'app' => array(
 						'name' => $appName,
 						'dev' => false,
-						'sessionLength' => $sessionLength,
+						'sessionLength' => ($sessionLength * 60),
 						'sessionPath' => $sessionPath,
 						'argon2' => true,
 						'iterations' => 100000,
@@ -128,10 +128,11 @@
 
 				header("Location: {$app -> uri}", TRUE, 301);
 			} catch (\Throwable $e) {
-				$_SESSION['flash']['error'][] = $e -> getMessage();
+				$_SESSION['error'][] = $e -> getMessage();
 			}
 
 			return $app -> view('install', array(
+				'appName' => $appName,
 				'databaseHost' => $databaseHost,
 				'databasePort' => $databasePort,
 				'databaseName' => $databaseName,

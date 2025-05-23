@@ -40,7 +40,7 @@
 
 				$_SESSION[$vault -> sessionID] = $app -> encrypt($vaultKey);
 			} catch(\ErrorException $e) {
-				$_SESSION['error'][] = $e -> getMessage();
+				$_SESSION['flash']['error'][] = $e -> getMessage();
 			}
 
 			return $this -> get($app, $id);
@@ -83,7 +83,7 @@
 
 				$_SESSION['flash']['success'][] = "Your vault was updated.";
 			} catch(\ErrorException $e) {
-				$_SESSION['error'][] = $e -> getMessage();
+				$_SESSION['flash']['error'][] = $e -> getMessage();
 			}
 
 			return $app -> get($app, $id);

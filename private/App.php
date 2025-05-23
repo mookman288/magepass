@@ -12,13 +12,13 @@
 		public $root;
 		public $route;
 		public $routeName;
+		public $sessionPath;
 		public $uri;
 		public $title;
 		public $user;
 		public $userKey;
 
 		protected $configPath;
-		protected $sessionPath;
 
 		public function __construct() {
 			$this -> root = realpath(sprintf("%s/../", __DIR__));
@@ -85,7 +85,7 @@
 			}
 		}
 
-		protected function connect($databaseHost, $databasePort, $databaseUser, $databasePass = null, $databaseName = null) {
+		public function connect($databaseHost, $databasePort, $databaseUser, $databasePass = null, $databaseName = null) {
 			$databaseHost = (!empty($databaseHost)) ? $databaseHost : 'localhost';
 			$databasePort = (!empty($databasePort)) ? $databasePort : 3306;
 
@@ -236,7 +236,7 @@
 				return sodium_crypto_pwhash(
 					2048,
 					$password,
-					$salt,
+					substr($salt, 0, SODIUM_CRYPTO_PWHASH_SALTBYTES),
 					SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
 					SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE,
 					SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13
@@ -472,7 +472,7 @@
 			}
 		}
 
-		protected function setConfig($config) {
+		public function setConfig($config) {
 			$ini = array();
 
 			foreach($config as $header => $configSet) {

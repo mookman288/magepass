@@ -49,16 +49,15 @@ location / {
 		<option value="5"<?php if (($sessionLength ?? null) == 5) { ?> selected="selected"<?php } ?>>
 			5 Minutes
 		</option>
-		<option value="15"<?php if (($sessionLength ?? null) == 15) { ?> selected="selected"<?php } ?>>
-			15 Minutes
+		<?php for ($i = 15; $i <= 45; $i += 15) { ?>
+		<option value="<?php print($i); ?>"<?php if (($sessionLength ?? null) == ($i)) { ?> selected="selected"<?php } ?>>
+			<?php print($i); ?> Minutes
 		</option>
-		<option value="30"<?php if (($sessionLength ?? null) == 30) { ?> selected="selected"<?php } ?>>
-			30 Minutes
+	<?php } ?>
+		<option value="60"<?php if (($sessionLength ?? null) == 60) { ?> selected="selected"<?php } ?>>
+			1 Hour
 		</option>
-		<option value="45"<?php if (($sessionLength ?? null) == 45) { ?> selected="selected"<?php } ?>>
-			45 Minutes
-		</option>
-	<?php for ($i = 1; $i <= 8; $i++) { ?>
+	<?php for ($i = 2; $i <= 8; $i++) { ?>
 		<option value="<?php print($i * 60); ?>"<?php if (($sessionLength ?? null) == ($i * 60)) { ?> selected="selected"<?php } ?>>
 			<?php print($i); ?> Hours
 		</option>
