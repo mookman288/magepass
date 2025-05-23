@@ -196,9 +196,15 @@ main {
 	border-radius: 0.50rem;
 }
 
+main > aside {
+	width: 25.00%;
+	margin: 1.00rem;
+	margin-right: 0;
+}
+
 main > section {
 	margin: 1rem;
-	width: 75%;
+	width: 75.00%;
 }
 
 h1 {
@@ -355,12 +361,6 @@ p {
 	border-color: mediumvioletred;
 }
 
-main > aside {
-	width: 25%;
-	margin: 1.00rem;
-	margin-right: 0;
-}
-
 .branding {
 	display: block;
 	margin-right: -0.50rem;
@@ -406,5 +406,44 @@ nav a {
 
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+@media all and (max-width: 1440px) {
+	main {
+		margin: 2.50rem auto;
+		width: 88.00%;
+	}
+}
+
+@media all and (max-width: 1280px) {
+	.branding {
+		letter-spacing: 0.80rem;
+	}
+
+	.recordField {
+		width: calc(50.00% - 0.50rem);
+	}
+}
+
+@media all and (max-width: 1152px) {
+	main {
+		width: 98.00%;
+	}
+
+	.card, .recordField {
+		width: 100.00%;
+	}
+}
+
+@media all and (max-width: 1024px) {
+	main {
+		display: block;
+	}
+
+	main > aside, main > section {
+		margin: 0;
+		padding: 1.00rem;
+		width: 100%;
 	}
 }
