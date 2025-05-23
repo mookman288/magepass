@@ -333,6 +333,10 @@ p {
 	padding: 0.50rem;
 }
 
+.recordField input[type=text], .recordField input[type=password], .recordField textarea {
+	width: 100.00%;
+}
+
 #deleteRecord {
 	margin-bottom: 1.00rem;
 	background-color: deeppink;

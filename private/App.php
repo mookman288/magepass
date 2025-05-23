@@ -132,15 +132,15 @@
 		public function encrypt($data, $key = null) {
 			$key = $key ?? $this -> config['app']['key'];
 			$ivLength = openssl_cipher_iv_length($this -> config['app']['cipher']);
-			$iv = openssl_random_pseudo_bytes($ivLength);
+			$iv = random_bytes($ivLength);
 
 			if (is_array($data) || is_object($data)) {
 				$data = serialize($data);
 			}
 
 			if (stripos($this -> config['app']['cipher'], 'gcm') !== false) {
-				$tag = openssl_random_pseudo_bytes(16);
-				$content = openssl_encrypt($data, $this -> config['app']['cipher'], $key, 0, $iv, $tag);
+				$tag = random_bytes(16);
+				$content = openssl_encrypt($data, $this -> config['app']['cipher'], $key, 0, $iv, $tag, '', 16);
 				$content = sprintf("%s%s%s", $tag, $iv, $content);
 			} else {
 				$content = openssl_encrypt($data, $this -> config['app']['cipher'], $key, OPENSSL_RAW_DATA, $iv);
@@ -232,7 +232,18 @@
 		}
 
 		public function getKey($password, $salt) {
-			return hash_pbkdf2('sha512', $password, $salt, 100000, 2048, true);
+			if (isset($this -> config['app']['argon2'])) {
+				return sodium_crypto_pwhash(
+					2048,
+					$password,
+					$salt,
+					SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
+					SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE,
+					SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13
+				);
+			}
+
+			return hash_pbkdf2('sha512', $password, $salt, $this -> config['app']['iterations'] ?? 100000, 2048, true);
 		}
 
 		public function getUrl($relative = null) {
@@ -305,7 +316,7 @@
 		}
 
 		public function hash($value) {
-			return password_hash($value, PASSWORD_DEFAULT);
+			return password_hash($value, PASSWORD_BCRYPT, array('cost' => 14));
 		}
 
 		public function hashVerify($value, $hash) {
@@ -402,6 +413,7 @@
 
 				$this -> title = $title ?? null;
 				$this -> description = $description ?? null;
+				$this -> skipHeartbeat = $skipHeartbeat ?? null;
 			}
 		}
 

@@ -1,5 +1,6 @@
 <?php
 	$title = 'Login';
+	$skipHeartbeat = true;
 ?>
 <h1>Login</h1>
 <form action="login" method="post">

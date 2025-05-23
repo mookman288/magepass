@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-api="<?php $app -> url(); ?>">
+<html data-api="<?php $app -> url(); ?>"<?php if (isset($app -> skipHeartbeat)) { ?> data-skip-heartbeat="true"<?php } ?>>
 	<head>
 		<title><?php print($app -> title ?? null); ?> | <?php print($app -> config['app']['name']); ?></title>
 		<link rel="icon" href="<?php $app -> url('favicon.ico'); ?>" />

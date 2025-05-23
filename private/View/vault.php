@@ -47,7 +47,7 @@
 			<input id="nameRecord<?php print($record -> id); ?>" name="name" type="text" size="40"
 				value="<?php print($record -> name); ?>" />
 			<label for="content<?php print($record -> id); ?>">Content</label>
-			<textarea id="content<?php print($record -> id); ?>" name="content" cols="42" rows="4"><?php
+			<textarea id="content<?php print($record -> id); ?>" name="content" cols="42" rows="5"><?php
 				print($record -> content);
 			?></textarea>
 			<label for="delete<?php print($record -> id); ?>">

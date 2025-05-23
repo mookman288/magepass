@@ -53,7 +53,7 @@
 					"INSERT INTO user (username, email, password, salt) VALUES (:username, :email, :password, :salt)"
 				);
 
-				$salt = openssl_random_pseudo_bytes(2048);
+				$salt = random_bytes(384);
 
 				$key = $app -> getKey($password, $salt);
 

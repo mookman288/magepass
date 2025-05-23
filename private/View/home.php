@@ -27,32 +27,69 @@
 <h2>How-To Guide</h2>
 <h3>How does this work?</h3>
 <p>
-	<?php print($app -> config['app']['name']); ?> allows you to organize and encrypt information, like logins, access
-	credentials, and more. Instead of memorizing information like passwords for every account,
-	<?php print($app -> config['app']['name']); ?> simplifies this to only a handful of passwords. Don't forget your
-	account password, though! <?php print($app -> config['app']['name']); ?> uses your account password to encrypt
-	your information. You will lose access to all of the information inside your account if you forget your
-	password.
+	<?php print($app -> config['app']['name']); ?> allows you to organize and encrypt information, like credentials,
+	or anything text-based.
+	Instead of memorizing usernames and passwords for every account, <?php print($app -> config['app']['name']); ?>
+	simplifies this to only a handful of passwords.
+</p>
+<p>
+	Your account password is used to encrypt your vault information, and your vault passwords are used to encrypt
+	your archives and records.
+	If you forget these passwords, you'll lose access to all of the information contained within.
 </p>
 <h3>What are Vaults?</h3>
 <p>
-	Vaults are containers that allow you to organize and categorize large sets of data you want to protect. For instance,
-	you might have a "personal" vault and a "work" vault. This method of categorization will help you organize your
-	information. It's up to you!
+	Vaults are containers that allow you to organize and categorize large sets of data you want to encrypt.
+	For instance, you might have a "personal" vault, and a "work" vault.
+	It's really up to you, how best to categorize your information!
 </p>
 <p>
-	Each vault is password protected. Try to use a memorable vault password, because if you lose your vault password,
-	you'll lose access to your data inside.
+	Each vault is password protected and this password is very important!
+	If you lose access to your vault password, you lose access to all of the data contained inside.
 </p>
-<h3>What are Archives?</h3>
+<h3>What are Archives and Records?</h3>
 <p>
-	Now that we're inside the vault, archives act as a "safety deposit box" of sorts. Each archive contains a collection
-	of encrypted information, also known as "records." You can have any number of records assigned to a single archive.
-	If you want to store login access for a website, you might have a "website" record, "username" record, "password"
-	record, and if you use two-factor authentication, a record for your 2FA backup codes.
+	Archives are smaller containers that exist within vaults.
+	Each archive contains a collection of records, and each record contains specific information you want to encrypt.
+	If you have a "personal" vault, you might have an archive entitled "family information."
+	Each record in this archive might be a name of a family member, and then their phone number, address, or some
+	other piece of pertinent information.
 </p>
 <h3>Can other people use this with me?</h3>
 <p>
-	Yes! You can register multiple accounts using the registration invite code at the bottom of the main menu. Registration
-	invite codes are extremely time limited, so you need to create a new account immediately after copying the code.
+	Yes!
+	You can register multiple accounts using the registration invite code at the bottom of the main menu.
+	Registration invite codes are extremely time limited, so you need to create a new account immediately after copying the
+	code.
+</p>
+<h3>How does the encryption technology work?</h3>
+<p>
+	There is an encryption method, and a decryption method.
+	The encryption method takes a data packet, and a key.
+</p>
+<p>
+	The application, on installation, generates a 2048-byte application key and 384-byte salt using a cryptographically secure
+	random byte function.
+	Key hashes are one-way hashed using Argon2.
+	If that is unavailable, they are hashed using PBKDF2-SHA512 with at least 100,000 iterations.
+</p>
+<p>
+	The application key is generally only used for encrypting session values, but could be used as a fallback if a key is not
+	supplied.
+	The application salt is generally only used as a fallback, as above.
+	Each user, on registration, generates a 2048-byte salt using a cryptographically secure random byte function. This is a
+	static salt bound to the user.
+	The user's password is stored as a one-way hash using Bcrypt with a work-factor of 14.
+	The user's password and salt are combined as a key hash and used to encrypt vault information.
+	Each vault, on creation, has a password stored as a one-way hash using Bcrypt with a work-factor of 14.
+	The vault's password and the user's salt are combined as a key hash and used to encrypt archive and record information.
+</p>
+<p>
+	Encryption is performed through OpenSSL using a predefined cipher.
+	The AES Cipher is set automatically by the application, prioritizing higher bit-length keys, and Galois/Counter Mode over
+	Counter Mode.
+	The initialization vector is set using a cryptographically secure random byte function and the length is set automatically
+	by OpenSSL based on cipher.
+	When using GCM, the tag length is 16 and is automatically generated by OpenSSL.
+	When using CTR, the HMAC is done through SHA512.
 </p>

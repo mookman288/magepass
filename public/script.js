@@ -44,7 +44,7 @@ var triggerAddRecordButtonListener = function() {
 			var inputContent = document.createElement('textarea');
 			inputContent.setAttribute('id', 'addRecordContent' + index)
 			inputContent.setAttribute('name', 'addRecordContent[' + index + ']');
-			inputContent.setAttribute('rows', 4);
+			inputContent.setAttribute('rows', 5);
 			inputContent.setAttribute('cols', 42);
 
 			div.appendChild(inputContent);
@@ -75,40 +75,42 @@ if (forms.length > 0) {
 	}
 }
 
-var heartbeat = setInterval(function() {
-	var request = new XMLHttpRequest();
-	var refresh = false;
+if (!document.getElementsByTagName('html')[0].dataset.skipHeartbeat) {
+	var heartbeat = setInterval(function() {
+		var request = new XMLHttpRequest();
+		var refresh = false;
 
-	request.onreadystatechange = function() {
-		if (request.readyState === XMLHttpRequest.DONE) {
-			response = JSON.parse(request.responseText);
+		request.onreadystatechange = function() {
+			if (request.readyState === XMLHttpRequest.DONE) {
+				response = JSON.parse(request.responseText);
 
-			if (request.status !== 200 || !response.status || response.status != 'OK') {
-				refresh = true;
-			}
-
-			if (refresh) {
-				if (!response.data || !response.data.message) {
-					var message = "Your session has expired. Please log back in to continue.";
-				} else {
-					var message = response.data.message;
+				if (request.status !== 200 || !response.status || response.status != 'OK') {
+					refresh = true;
 				}
 
-				if (!response.data || !response.data.redirect) {
-					var redirect = location.href;
-				} else {
-					var redirect = response.data.redirect;
-				}
-
-				if (confirm(message)) {
+				if (refresh) {
 					clearInterval(heartbeat);
 
-					location.href = redirect;
+					if (!response.data || !response.data.message) {
+						var message = "Your session has expired. Please log back in to continue.";
+					} else {
+						var message = response.data.message;
+					}
+
+					if (!response.data || !response.data.redirect) {
+						var redirect = location.href;
+					} else {
+						var redirect = response.data.redirect;
+					}
+
+					if (confirm(message)) {
+						location.href = redirect;
+					}
 				}
 			}
-		}
-	};
+		};
 
-	request.open('GET', endpoint + 'ping');
-	request.send();
-}, 10000);
+		request.open('GET', endpoint + 'ping');
+		request.send();
+	}, 10000);
+}

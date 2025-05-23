@@ -82,8 +82,8 @@
 
 				$app -> update(true);
 
-				$salt = openssl_random_pseudo_bytes(2048);
-				$key = openssl_random_pseudo_bytes(2048);
+				$salt = random_bytes(384);
+				$key = random_bytes(2048);
 				$ciphers = openssl_get_cipher_methods();
 				$cipher = $ciphers[0];
 
@@ -105,6 +105,8 @@
 						'dev' => false,
 						'sessionLength' => $sessionLength,
 						'sessionPath' => $sessionPath,
+						'argon2' => true,
+						'iterations' => 100000,
 						'cipher' => $cipher,
 						'salt' => bin2hex($salt),
 						'key' => bin2hex($key)
