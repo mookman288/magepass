@@ -30,7 +30,7 @@ nav	ul {
 	list-style: none;
 }
 
-h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol, form, .h-captcha {
+h1, h2, h3, h4, h5, h6, p, label, legend, li, pre, input, select, textarea, ul, ol, form, .card > div, .h-captcha {
 	margin-bottom: 1.00rem;
 }
 
@@ -98,11 +98,13 @@ input[type=submit], button[type=submit] {
 button:hover, .button:hover, input[type=submit]:hover, nav a:hover {
 	background-color: dodgerblue;
 	border-color: deepskyblue;
+	color: white;
 }
 
 button:active, .button:active, input[type=submit]:active, nav a:active {
 	background-color: blue;
 	border-color: dodgerblue;
+	color: white;
 }
 
 button, .button, input[type=submit], label {

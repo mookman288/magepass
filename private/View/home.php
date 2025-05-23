@@ -8,10 +8,12 @@
 	<div class="card">
 		<h3><?php print($vault -> name); ?></h3>
 	<?php if (!empty($app -> getVaultKey($vault -> id))) { ?>
-		<p>This vault is currently unlocked.</p>
-		<a href="<?php $app -> url("vault/{$vault -> id}"); ?>" class="button">
-			View Vault
-		</a>
+		<div>
+			<p>This vault is currently unlocked.</p>
+			<a href="<?php $app -> url("vault/{$vault -> id}"); ?>" class="button">
+				View Vault
+			</a>
+		</div>
 	<?php } else { ?>
 		<form action="<?php $app -> url("vault/{$vault -> id}"); ?>" method="post">
 			<label for="password-<?php print($id); ?>">Password</label>
@@ -65,7 +67,12 @@
 <h3>How does the encryption technology work?</h3>
 <p>
 	There is an encryption method, and a decryption method.
-	The encryption method takes a data packet, and a key.
+	The encryption method takes a data packet, and a key. Encypted content is stored in the database as a BLOB.
+	The decryption method takes an encrypted packet, and a key. Decrypted content should represent the original data.
+	Emails, salts, pins, vault names, archive names, and record names and content are encrypted.
+	Usernames, identification numbers, and dates are not encrypted.
+	Passwords are one-way hashed.
+	Besides the application key, all other keys are only temporarily stored (encrypted) in the session.
 </p>
 <p>
 	The application, on installation, generates a 2048-byte application key and 384-byte salt using a cryptographically secure
@@ -75,7 +82,7 @@
 </p>
 <p>
 	The application key is generally only used for encrypting session values, but could be used as a fallback if a key is not
-	supplied.
+	supplied (or if a vault is shared.)
 	The application salt is generally only used as a fallback, as above.
 	Each user, on registration, generates a 2048-byte salt using a cryptographically secure random byte function. This is a
 	static salt bound to the user.

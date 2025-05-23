@@ -38,6 +38,11 @@
 						<li><a href="<?php $app -> url('home'); ?>">Home &ndash; Vaults</a></li>
 						<li><a href="<?php $app -> url('vault/create'); ?>">Create Vault</a></li>
 						<li><a href="<?php $app -> url('logout'); ?>">Logout</a></li>
+						<li>
+							<a href="https://www.pxoink.net/projects/passwords" target="_blank" rel="noopener">
+								Password Generator <span title="Open in New Window / Tab">&nearr;</span>
+							</a>
+						</li>
 						<li style="text-align: center;">
 							<hr />
 							<label for="inviteCode">Registration Invite Code</label>

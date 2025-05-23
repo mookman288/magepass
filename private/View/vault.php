@@ -13,6 +13,8 @@
 		<label for="nameEdit<?php print($vault-> id); ?>">Name</label>
 		<input id="nameEdit<?php print($vault-> id); ?>" name="name" type="text" size="40" value="<?php print($vault -> name ?? null); ?>" />
 <!--
+		<label for="existingEdit<?php print($vault-> id); ?>">Existing Password</label>
+		<input id="existingEdit<?php print($vault-> id); ?>" name="existing" type="password" size="40" />
 		<label for="passwordEdit<?php print($vault-> id); ?>">Password</label>
 		<input id="passwordEdit<?php print($vault-> id); ?>" name="password" type="password" size="40" />
 		<label for="confirmEdit<?php print($vault-> id); ?>">Confirm Password</label>
@@ -28,7 +30,8 @@
 			foreach($archives as $id => $archive) {
 ?>
 	<div class="card full archive" data-endpoint="<?php $app -> url("vault/{$vault -> id}/archive/{$archive -> id}"); ?>">
-		<h3 class="link"><?php print($archive -> name); ?></h3>
+		<h3><?php print($archive -> name); ?></h3>
+		<hr />
 		<form action="<?php $app -> url("vault/{$vault -> id}/archive/{$archive -> id}"); ?>" method="post">
 			<label for="nameArchive<?php print($archive -> id); ?>">Name</label>
 			<input id="nameArchive<?php print($archive -> id); ?>" name="name" type="text" size="40" value="<?php print($archive -> name); ?>" />
@@ -78,6 +81,7 @@
 ?>
 	<p>There are no archives. Would you like to create one?</p>
 <?php 	} ?>
+	<hr />
 	<h2>Create Archive</h2>
 	<form action="<?php $app -> url("vault/{$vault -> id}/archive"); ?>" method="post">
 		<label for="nameCreate<?php print($archive -> id); ?>">Name</label>
